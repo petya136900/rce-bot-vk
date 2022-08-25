@@ -34,6 +34,9 @@ public class RegexpTools {
 		return replaceRegexp(message, remove, "",true);
 	}
 	public static String replaceRegexp(String message, String what, String replacement, Boolean all) {
+		if (message==null) {
+			return "";
+		}
 		if(all) {
 			return Pattern.compile("(?i)"+what,Pattern.UNICODE_CASE).matcher(message).replaceAll(replacement);
 		} else {

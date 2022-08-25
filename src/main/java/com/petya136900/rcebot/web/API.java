@@ -15,7 +15,7 @@ import com.petya136900.rcebot.rce.timetable.TimetableResponse;
 import com.petya136900.rcebot.rce.timetable.TimetableServer;
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
 import com.petya136900.rcebot.tools.JsonParser;
-import com.petya136900.rcebot.trash.Foo;
+import com.petya136900.rcebot.tools.Foo;
 
 @RestController
 public class API {

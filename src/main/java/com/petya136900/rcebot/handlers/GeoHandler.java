@@ -10,13 +10,14 @@ import com.petya136900.rcebot.geoapi.GeoJson;
 import com.petya136900.rcebot.geoapi.GeoSatelliteLite;
 import com.petya136900.rcebot.geoapi.GeoPhotoUploadThread;
 import com.petya136900.rcebot.geoapi.GeoAPI.GeoData;
+import com.petya136900.rcebot.other.Tokens;
 import com.petya136900.rcebot.vk.VK;
 import com.petya136900.rcebot.vk.structures.MessageSendResponse.MessageInfo;
 import com.petya136900.rcebot.vk.structures.VKAttachment.Photo;
 import com.petya136900.rcebot.vk.structures.VKMessage.Geo;
 
 public class GeoHandler implements HandlerInterface {
-	private static final String GEP_APIKEY = "AGROMONITORING_API_KEY_HERE";
+	private static final String GEO_APIKEY = Tokens.AGROMONITORING_API_KEY;
 	private Geo geo;
 	private GeoJson geoJson;
 	private final File tempDir = new File("Temp");
@@ -24,7 +25,7 @@ public class GeoHandler implements HandlerInterface {
 	private static final float DEFAULT_SCALE = 1;
 	@Override
 	synchronized public void handle(VK vkContent) {
-		GeoAPI geoApi = new GeoAPI(GEP_APIKEY);
+		GeoAPI geoApi = new GeoAPI(GEO_APIKEY);
 		if(vkContent.getVK().getGeo()==null) {
 			vkContent.reply("Ты не прикрепил место на карте");
 			return;

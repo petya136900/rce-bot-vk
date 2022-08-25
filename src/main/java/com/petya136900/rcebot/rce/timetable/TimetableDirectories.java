@@ -3,7 +3,7 @@ package com.petya136900.rcebot.rce.timetable;
 import java.io.File;
 
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
-import com.petya136900.rcebot.trash.Foo;
+import com.petya136900.rcebot.tools.Foo;
 
 public class TimetableDirectories {
 

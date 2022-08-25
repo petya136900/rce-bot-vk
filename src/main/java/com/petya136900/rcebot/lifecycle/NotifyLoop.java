@@ -12,7 +12,7 @@ import com.petya136900.rcebot.rce.timetable.TimetableClient;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
 import com.petya136900.rcebot.rce.timetable.TimetableServer;
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
-import com.petya136900.rcebot.trash.Foo;
+import com.petya136900.rcebot.tools.Foo;
 import com.petya136900.rcebot.vk.VK;
 
 public class NotifyLoop extends Thread {

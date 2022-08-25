@@ -28,7 +28,7 @@ public class RceBot {
 	public static void main(String[] args) throws UnsupportedEncodingException {
 		Settings settings = ConsoleParser.parseArgs(args);
 		settings.addBotNames(myBotNames); // The names to which the bot reacts in chats
-		settings.setGroupToken("VK_GROUP_TOKEN_HERE");
+		settings.setGroupToken("GROUP_TOKEN");
 		System.out.println(settings);
 		VK.setup(settings);
 		VK.setAdminID(550940196);
@@ -40,7 +40,7 @@ public class RceBot {
 				+ "Например: Бот, Пары на завтра\n"+
 				"Напиши \"Справка\" для получения команд")); // Register Default Handler
 		VK.setPerformOnlyHandler(true); // Handle only the first matching handler
-		VK.setTestMode(settings.getTestMode(), true); // Reply only to admin
+		VK.setTestMode(settings.getTestMode()); // Reply only to admin
 		Logger.setCheckSql(!settings.getTestMode());
 		Logger.setSendToVk(!settings.getTestMode());
 

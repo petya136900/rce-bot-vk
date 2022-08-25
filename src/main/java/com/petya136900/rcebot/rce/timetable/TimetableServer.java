@@ -10,7 +10,7 @@ import com.petya136900.rcebot.pdfparser.PdfParser;
 import com.petya136900.rcebot.pdfparser.TimetablePDF;
 import com.petya136900.rcebot.rce.RCE;
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
-import com.petya136900.rcebot.trash.Foo;
+import com.petya136900.rcebot.tools.Foo;
 import com.petya136900.rcebot.vk.VK;
 
 @SuppressWarnings("unused")

@@ -1,5 +1,6 @@
 package com.petya136900.rcebot.geoapi;
 
+import com.petya136900.rcebot.other.Tokens;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,13 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.petya136900.rcebot.geoapi.GeoAPI.GeoData;
 @RestController 
 public class SatelliteController {
-	private static final String GEP_APIKEY = "AGROMONITORING_API_KEY_HERE";
+	private static final String GEO_APIKEY = Tokens.AGROMONITORING_API_KEY;
 	float lat,lon;
 	private static String lastID=null;
 	@RequestMapping(value = "/satellite", method = RequestMethod.GET)
 	synchronized public String satelliteController(@RequestParam(value = "lat", required = true, defaultValue = "54.628304") String latS, 
 										@RequestParam(value = "lon", required = true, defaultValue = "39.72951") String lonS) {
-		GeoAPI geoApi = new GeoAPI(GEP_APIKEY);
+		GeoAPI geoApi = new GeoAPI(GEO_APIKEY);
 		lat = Float.parseFloat(latS);
 		lon = Float.parseFloat(lonS);
 		if(lastID!=null) {

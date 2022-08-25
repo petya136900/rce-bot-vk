@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.petya136900.rcebot.other.Tokens;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,9 +26,9 @@ import com.petya136900.rcebot.vk.structures.MessageSendResponse.MessageInfo;
 import com.petya136900.rcebot.vk.structures.VKAttachment.Photo.Size;
 
 public class FurryHandler implements HandlerInterface {
-	private static final String SAUCENAO_USER = "SAUCENAO_USER_HERE";
-	private static final String SAUCENAO_TOKEN = "SAUCENAO_TOKEN_HERE";
-	private static final String SAUCENAO_AUTH = "SAUCENAO_AUTH_KEY_HERE";
+	private static final String SAUCENAO_USER = Tokens.SAUCENAO_USER_ID;
+	private static final String SAUCENAO_TOKEN = Tokens.SAUCENAO_TOKEN;
+	private static final String SAUCENAO_AUTH = Tokens.SAUCENAO_AUTH;
 	private Boolean nf=true;
 	@Override
 	public  void     handle(VK vkContent) {

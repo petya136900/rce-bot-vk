@@ -6,10 +6,11 @@ import com.petya136900.rcebot.lifecycle.HandlerInterface;
 import com.petya136900.rcebot.geoapi.WeatherAPI;
 import com.petya136900.rcebot.geoapi.WeatherData;
 import com.petya136900.rcebot.geoapi.WeatherException;
+import com.petya136900.rcebot.other.Tokens;
 import com.petya136900.rcebot.vk.VK;
 
 public class WeatherHandler implements HandlerInterface {
-	private static final String WEATHER_APIKEY = "OPENWEATHER_API_KEY_HERE";
+	private static final String WEATHER_APIKEY = Tokens.OPENWEATHER_API_KEY;
 	@Override
 	public void handle(VK vkContent) {
 		try {

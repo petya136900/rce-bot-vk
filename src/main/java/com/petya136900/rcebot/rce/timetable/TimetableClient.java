@@ -13,7 +13,7 @@ import com.petya136900.rcebot.handlers.CreateKeyboardHandler;
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
 import com.petya136900.rcebot.tools.JsonParser;
 import com.petya136900.rcebot.tools.RegexpTools;
-import com.petya136900.rcebot.trash.Foo;
+import com.petya136900.rcebot.tools.Foo;
 import com.petya136900.rcebot.vk.VK;
 import com.petya136900.rcebot.vk.structures.Payload;
 

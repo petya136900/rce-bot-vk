@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 import com.petya136900.rcebot.rce.timetable.TimetableException;
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
-import com.petya136900.rcebot.trash.Foo;
+import com.petya136900.rcebot.tools.Foo;
 
 public class BotSettings {
 	private Boolean replace_mainshelude=false;

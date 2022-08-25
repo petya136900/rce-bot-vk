@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
 import com.petya136900.rcebot.tools.JsonParser;
-import com.petya136900.rcebot.trash.Foo;
+import com.petya136900.rcebot.tools.Foo;
 public class SQLData {
 	private String day;
 	private String ver;

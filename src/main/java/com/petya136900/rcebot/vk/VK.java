@@ -28,27 +28,7 @@ import com.petya136900.rcebot.tools.Settings;
 import com.petya136900.rcebot.vk.other.CallBack;
 import com.petya136900.rcebot.vk.other.LongPoll;
 import com.petya136900.rcebot.vk.other.NullObject;
-import com.petya136900.rcebot.vk.structures.ClientInfo;
-import com.petya136900.rcebot.vk.structures.EventData;
-import com.petya136900.rcebot.vk.structures.Field;
-import com.petya136900.rcebot.vk.structures.Filter;
-import com.petya136900.rcebot.vk.structures.GetConversationsResponse;
-import com.petya136900.rcebot.vk.structures.GetConversationsResponseObject;
-import com.petya136900.rcebot.vk.structures.Group;
-import com.petya136900.rcebot.vk.structures.Keyboard;
-import com.petya136900.rcebot.vk.structures.LongPollObject;
-import com.petya136900.rcebot.vk.structures.LongPollObjectCB;
-import com.petya136900.rcebot.vk.structures.MessageEventAnswer;
-import com.petya136900.rcebot.vk.structures.MessageSendResponse;
-import com.petya136900.rcebot.vk.structures.MessagesUploadServer;
-import com.petya136900.rcebot.vk.structures.ResponseGen;
-import com.petya136900.rcebot.vk.structures.ResponseInteger;
-import com.petya136900.rcebot.vk.structures.User;
-import com.petya136900.rcebot.vk.structures.VKAPIResponse;
-import com.petya136900.rcebot.vk.structures.VKAttachment;
-import com.petya136900.rcebot.vk.structures.VKJson;
-import com.petya136900.rcebot.vk.structures.VKJsonCB;
-import com.petya136900.rcebot.vk.structures.VKMessage;
+import com.petya136900.rcebot.vk.structures.*;
 import com.petya136900.rcebot.vk.structures.Button.Type;
 import com.petya136900.rcebot.vk.structures.MessageSendResponse.MessageInfo;
 import com.petya136900.rcebot.vk.structures.User.name_case;
@@ -68,6 +48,8 @@ public class VK {
 	public final static Integer MAX_MESSAGE_LENGTH=3400;
 	private static final Integer SPAM_MAX_RETRY_TIME=10;
 	private static final Integer SPAM_DELAY_MS=300;
+	private static final String VK_SCHEME = "https://";
+	private static final String VK_METHOD_DOMAIN = "api.vk.com/method/";
 
 	public static void setup(Settings settings) {
 		VK.setup(settings.getGroupToken(), // GROUP TOKEN (message permission)
@@ -175,7 +157,7 @@ public class VK {
 		return this;
 	}
 	public static String getVideos(Integer owner_id, Integer video_id,String access_key) {	
-		String urlHost = "https://api.vk.com/method/video.get";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"video.get";
 		String urlParams = "access_token="+VK.USER_TOKEN
 		+"&v="+VK.API_VERSION
 		+"&videos="+owner_id+"_"+video_id+"_"+access_key;
@@ -224,7 +206,7 @@ public class VK {
 		return response;
 	}
 	public static VKMessage[] getByConversationMessageId(Integer peer_id, Integer conversation_message_id) {
-		String urlHost = "https://api.vk.com/method/messages.getByConversationMessageId";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.getByConversationMessageId";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 		+"&v="+VK.API_VERSION
 		+"&peer_id="+peer_id
@@ -248,7 +230,7 @@ public class VK {
 		if(ids.length()<1) {
 			return null;
 		}
-		String urlHost = "https://api.vk.com/method/messages.getById";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.getById";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 		+"&v="+VK.API_VERSION
 		+"&message_ids="+ids;
@@ -278,6 +260,9 @@ public class VK {
 	public static void setPerformOnlyHandler(boolean b) {
 		HandlerMapping.setPerformOnlyHandler(b); 
 	}
+	public static void setTestMode(boolean testMode) {
+		setTestMode(testMode,true);
+	}
 	public static void setTestMode(boolean testMode, boolean quite) {
 		HandlerMapping.setTestMode(testMode);
 		HandlerMapping.setQuiteTestMode(quite);
@@ -301,7 +286,7 @@ public class VK {
 		return API_VERSION;
 	}
 	public static LongPoll getLongPollServer(String apiVersion) {
-		String urlHost = "https://api.vk.com/method/groups.getLongPollServer";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"groups.getLongPollServer";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 		+"&v="+apiVersion
 		+"&group_id="+GROUP_ID;
@@ -417,7 +402,7 @@ public class VK {
 		return saveMessagesPhoto(jsph).getResponse()[0];
 	}	
 	public static void sendCreatedImages(Integer peer_id,Photo[] response) {
-		String urlHost = "https://api.vk.com/method/messages.send";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.send";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
 				+ "&peer_id="+peer_id
@@ -440,7 +425,7 @@ public class VK {
 		sendApiRequest(urlHost, urlParams);
 	}
 	private static CreatedImages saveMessagesPhoto(JsonServerPhotoHash jsph) {
-		String urlHost = "https://api.vk.com/method/photos.saveMessagesPhoto";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"photos.saveMessagesPhoto";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 		+"&photo="+jsph.getPhoto()
 		+"&v="+VK.API_VERSION
@@ -467,7 +452,7 @@ public class VK {
 	}
 	//private static MessagesUploadServer getMessagesUploadServer(Integer peer_id) {
 	private static MessagesUploadServer getMessagesUploadServer() {
-		String urlHost = "https://api.vk.com/method/photos.getMessagesUploadServer";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"photos.getMessagesUploadServer";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 		+"&v="+VK.API_VERSION
 		//+"&peer_id="+peer_id;
@@ -581,7 +566,7 @@ public class VK {
 			keyboardString=null;
 		}
 		Random rnd = new Random(System.currentTimeMillis());
-		String urlHost = "https://api.vk.com/method/messages.send";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.send";
 		try {
 			message = URLEncoder.encode(message, "UTF-8").replace("+", "%20");
 		} catch (UnsupportedEncodingException ignored) {
@@ -624,7 +609,7 @@ public class VK {
 		return getVK().getClient_info().support(button_type);
 	}
 	public void sendMessageEventAnswer(MessageEventAnswer answer) {
-		String urlHost = "https://api.vk.com/method/messages.sendMessageEventAnswer";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.sendMessageEventAnswer";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
 				+"&peer_id="+answer.getPeer_id()
@@ -641,7 +626,7 @@ public class VK {
 		sendMessageEventAnswer(answer);		
 	}
 	public static GetConversationsResponse getConversations(Filter filter, Integer count) {
-		String urlHost = "https://api.vk.com/method/messages.getConversations";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.getConversations";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
 				+"&group_id="+VK.GROUP_ID
@@ -659,7 +644,7 @@ public class VK {
 		return HandlerMapping.getTestMode();
 	}
 	public static void deleteMessages(int... message_ids) {
-		String urlHost = "https://api.vk.com/method/messages.delete";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.delete";
 		String ids = Arrays.stream(message_ids)
 			.filter(n->n>0)
 			.mapToObj(String::valueOf)
@@ -735,7 +720,7 @@ public class VK {
 		} else {
 			keyboardString=null;
 		}
-		String urlHost = "https://api.vk.com/method/messages.edit";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.edit";
 		try {
 			new_message = URLEncoder.encode(new_message, "UTF-8").replace("+", "%20");
 		} catch (UnsupportedEncodingException ignored) {
@@ -777,7 +762,7 @@ public class VK {
 		return false;
 	}
 	public static Long getServerTime() {
-		String urlHost = "https://api.vk.com/method/utils.getServerTime";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"utils.getServerTime";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION;
 		String response = sendApiRequest(urlHost,urlParams);
@@ -822,7 +807,7 @@ public class VK {
 				.collect(Collectors.joining(","));
 		if((user_idsString==null||user_idsString.length()<1)&!forToken)
 			return null;
-		String urlHost = "https://api.vk.com/method/users.get";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"users.get";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
 				+(!forToken?("&user_ids="+user_idsString):"")
@@ -849,7 +834,7 @@ public class VK {
 	public static void markAsRead(Integer peer_id) {
 		if(peer_id==null)
 			return;
-		String urlHost = "https://api.vk.com/method/messages.markAsRead";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.markAsRead";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
 				+"&peer_id="+peer_id;
@@ -858,7 +843,7 @@ public class VK {
 	public static void markAsAnswered(Integer peer_id) {
 		if(peer_id==null)
 			return;
-		String urlHost = "https://api.vk.com/method/messages.markAsAnsweredConversation";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.markAsAnsweredConversation";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
 				+"&answered=1"
@@ -885,7 +870,7 @@ public class VK {
 	public static Group[] getGroupsById(String ids) {
 		if(ids==null||ids.length()<1) 
 			return null;
-		String urlHost = "https://api.vk.com/method/groups.getById";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"groups.getById";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
 				+"&fields=description"
@@ -903,7 +888,7 @@ public class VK {
 				.filter(x->x!=null)
 				.map(x->x+"")
 			    .collect(Collectors.joining(","));
-		String urlHost = "https://api.vk.com/method/messages.delete";
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.delete";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
 				+"&delete_for_all=1"
@@ -911,5 +896,17 @@ public class VK {
 				+"&conversation_message_ids="+ids
 				+"&group_ids="+VK.GROUP_ID;
 		sendApiRequest(urlHost,urlParams);
+	}
+	public static Conversations getConversationByid(Integer peerId) {
+		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.getConversationsById";
+		String urlParams = "access_token="+VK.GROUP_TOKEN
+				+"&v="+VK.API_VERSION
+				+"&peer_ids="+peerId
+				+"extended=true"
+				+"group_id="+VK.GROUP_ID;
+		String response = sendApiRequest(urlHost,urlParams);
+		java.lang.reflect.Type type = new TypeToken<ResponseGen<Conversations>>(){}.getType();
+		ResponseGen<Conversations> fromJson = JsonParser.fromJson(response,type);
+		return fromJson.getResponse();
 	}
 }

@@ -2,6 +2,7 @@ package com.petya136900.rcebot.vk.structures;
 
 public class Conversation {
 	private ConvPeer peer;
+	private ChatSettings chat_settings;
 	private long last_message_id;
 	private long in_read;
 	private long out_read;
@@ -59,4 +60,6 @@ public class Conversation {
 	public void setUnanswered(boolean unanswered) {
 		this.unanswered = unanswered;
 	}
+	public ChatSettings getChat_settings() { return chat_settings; }
+	public void setChat_settings(ChatSettings chat_settings) { this.chat_settings = chat_settings; }
 }

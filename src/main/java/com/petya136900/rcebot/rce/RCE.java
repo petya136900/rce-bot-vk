@@ -9,7 +9,7 @@ import com.petya136900.rcebot.db.MySqlConnector;
 //import com.petya136900.rcebot.rce.timetable.DateO;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
-import com.petya136900.rcebot.trash.Foo;
+import com.petya136900.rcebot.tools.Foo;
 
 public class RCE {
 	private static String RCE_HOST; // ="http://127.0.0.1";

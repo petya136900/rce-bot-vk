@@ -5,15 +5,13 @@ import static org.fusesource.jansi.Ansi.Color.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.petya136900.rcebot.tools.JsonParser;
+import com.petya136900.rcebot.vk.structures.*;
 import org.fusesource.jansi.AnsiConsole;
 
 import com.petya136900.rcebot.db.MySqlConnector;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
 import com.petya136900.rcebot.vk.VK;
-import com.petya136900.rcebot.vk.structures.Payload;
-import com.petya136900.rcebot.vk.structures.User;
-import com.petya136900.rcebot.vk.structures.VKAttachment;
-import com.petya136900.rcebot.vk.structures.VKMessage;
 
 public class Logger extends Thread {
 	private static Boolean sendToVk=true;
@@ -95,6 +93,7 @@ public class Logger extends Thread {
 		if(groupName==null) {
 			groupName="$UNKWN";
 		}
+		Conversations conversations = VK.getConversationByid(vk.getVK().getPeer_id());
 		System.out.println(ansi()
 				.fgBrightBlue().a(convertDate(curTime)).fg(DEFAULT)
 				.a(" |")
@@ -102,7 +101,9 @@ public class Logger extends Thread {
 				.a(" |")
 				.fgBrightBlue().a("peer_id: ").fg(DEFAULT)
 				.fg(CYAN).a(peer_id).fg(DEFAULT)
-				.fg(YELLOW).a("("+groupName+")").fg(DEFAULT)
+				.fg(YELLOW).a("("+groupName+")")
+				.fg(CYAN).a(getConvTitle(conversations))
+				.fg(DEFAULT)
 				.a(" |")
 				.fgBrightBlue().a("user_id: ").fg(DEFAULT)
 				.fg(CYAN).a(user_id).fg(DEFAULT)
@@ -145,32 +146,16 @@ public class Logger extends Thread {
 		if(groupName==null) {
 			groupName="$UNKWN";
 		}
-		
-		/*
-		System.out.println(ansi()
-				.fgBrightBlue().a(convertDate(message.getDate())).fg(DEFAULT)
-				.a(" |")
-				.fgBrightBlue().a("peer_id: ").fg(DEFAULT)
-				.fg(CYAN).a(message.getPeer_id()).fg(DEFAULT)
-				.fg(YELLOW).a("("+groupName+")").fg(DEFAULT)
-				.a(" |")
-				.fgBrightBlue().a("from_id: ").fg(DEFAULT)
-				.fg(CYAN).a(message.getFrom_id()).fg(DEFAULT)
-				.a(" |")
-				.fgBrightBlue().a("message_id: ").fg(DEFAULT)
-				.fg(CYAN).a(message.getConversation_message_id()).fg(DEFAULT)
-				.a(" |")
-				.fgBrightBlue().a("text: ").fg(DEFAULT)
-				.fgBrightCyan().a(message.getText().replace("@all","@\\all")).fg(DEFAULT)
-				);
-		*/
+		Conversations conversations = VK.getConversationByid(vk.getVK().getPeer_id());
 		User user = message.getUser();
 		System.out.println(ansi()
 				.fgBrightBlue().a(convertDate(message.getDate())).fg(DEFAULT)
 				.a(" |")
 				.fgBrightBlue().a("Peer: ").fg(DEFAULT)
 				.fg(CYAN).a(message.getPeer_id()).fg(DEFAULT)
-				.fg(YELLOW).a("("+groupName+")").fg(DEFAULT)
+				.fg(YELLOW).a("("+groupName+")")
+				.fg(CYAN).a(getConvTitle(conversations))
+				.fg(DEFAULT)
 				.a(" |")
 				.fgBrightBlue().a("id: ").fg(DEFAULT)
 				.fg(CYAN).a(message.getConversation_message_id()).fg(DEFAULT)
@@ -185,7 +170,8 @@ public class Logger extends Thread {
 		//System.out.println("Message ID: "+message.getId());
 		sb.append(
 					convertDate(message.getDate())+"\n"+
-					"peer_id: "+message.getPeer_id()+"("+groupName+")\n"+
+					"peer_id: "+message.getPeer_id()+"("+groupName+")" +
+					getConvTitle(conversations)+"\n"+
 					"from_id: vk.com/"+(message.getFrom_id()>-1?"id":"club")+Math.abs(message.getFrom_id())+"\n"+
 					"message_id: "+message.getConversation_message_id()+"\n"+
 					"text: "+message.getText().replace("@all","@\\all")+"\n"
@@ -301,6 +287,17 @@ public class Logger extends Thread {
 			}
 		}
 	}
+
+	private String getConvTitle(Conversations conversations) {
+		if(conversations==null||conversations.isEmpty())
+			return "";
+		try {
+			return " [" + (conversations.getItems()[0].getChat_settings().getTitle()) + "]";
+		} catch (Exception e) {
+			return "[failed]";
+		}
+	}
+
 	private String convertDate(Long timeStamp) {
 		return "["+new SimpleDateFormat("dd.MM HH:mm:ss").format(new Date((long)timeStamp*1000))+"]";
 	}

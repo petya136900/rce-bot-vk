@@ -1,4 +1,4 @@
-package com.petya136900.rcebot.trash;
+package com.petya136900.rcebot.tools;
 
 import java.lang.reflect.Field;
 
