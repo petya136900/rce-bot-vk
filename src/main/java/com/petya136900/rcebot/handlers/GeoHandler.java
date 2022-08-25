@@ -33,13 +33,13 @@ public class GeoHandler implements HandlerInterface {
 		MessageInfo mess = vkContent.reply("Ожидание...");
 		geo=vkContent.getVK().getGeo();
 		geoJson=new GeoJson();
-		float scale = DEFAULT_SCALE;
+		float scale;
 		try {
-			Float.parseFloat(vkContent.getVK().getText().toLowerCase()
+			scale = Float.parseFloat(vkContent.getVK().getText().toLowerCase()
 					.replace("спутник", "")
 					.replace("geo","").trim());
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			scale = DEFAULT_SCALE;
 		}
 		geoJson.getGeo_json().getGeometry().setCoordinates(geo.get5points(0.015f*scale));
 		GeoData geoData = geoApi.createPolygon(geoJson);

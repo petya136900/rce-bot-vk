@@ -148,6 +148,13 @@ public class Logger extends Thread {
 		}
 		Conversations conversations = VK.getConversationByid(vk.getVK().getPeer_id());
 		User user = message.getUser();
+		String senderName;
+		if(message.getFrom_id()<0) {
+			Group group = VK.getGroupById(message.getFrom_id());
+			senderName = (group==null)?"[API ERROR]":group.getName();
+		} else {
+			senderName = (user==null)?"[API ERROR]":(user.getFirst_name()+" "+user.getLast_name());
+		}
 		System.out.println(ansi()
 				.fgBrightBlue().a(convertDate(message.getDate())).fg(DEFAULT)
 				.a(" |")
@@ -162,7 +169,7 @@ public class Logger extends Thread {
 				.a(" |")
 				.fgBrightBlue().a("From: ").fg(DEFAULT)
 				.fg(YELLOW).a("("+message.getFrom_id()+") ").fg(DEFAULT)
-				.fg(CYAN).a(message.getFrom_id()<0?(VK.getGroupById(message.getFrom_id()).getName()):(user.getFirst_name()+" "+user.getLast_name())).fg(DEFAULT)
+				.fg(CYAN).a(senderName).fg(DEFAULT)
 				.a(" |")
 				//.fgBrightBlue().a("text: ").fg(DEFAULT)
 				.fgBrightCyan().a(message.getText()).fg(DEFAULT)

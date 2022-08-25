@@ -517,12 +517,11 @@ public class VK {
 			(System.currentTimeMillis()-startTime)<(timeout*1000);) {
 			message = getByConversationMessageId(peer_id,conversation_message_id)[0];
 			audioMessage = message.getAttachments()[0].getAudio_message();
-			if(audioMessage.getTranscript_state().equalsIgnoreCase("in_progress")) {
+			if(((audioMessage==null)||(audioMessage.getTranscript_state()==null))||
+					(audioMessage.getTranscript_state().equalsIgnoreCase("in_progress"))) {
 				try {
 					Thread.sleep(100);
-				} catch (InterruptedException ignored) {
-					
-				}
+				} catch (InterruptedException ignored) {}
 				continue;
 			} else if(audioMessage.getTranscript_state().equalsIgnoreCase("done")) {
 				break;
