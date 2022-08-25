@@ -1,8 +1,8 @@
 package com.petya136900.rcebot.vk.structures;
 
 public class Conversations {
-    private Integer count;
-    private Conversation[] items;
+    private Integer count = 0;
+    private Conversation[] items = new Conversation[]{};
     public Integer getCount() {
         return count;
     }
@@ -20,8 +20,9 @@ public class Conversations {
     }
 
     public boolean isEmpty() {
-        if(items==null||items.length<1)
-            return true;
-        return false;
+        return (items == null) || (items.length < 1);
+    }
+    public static Conversations getEmpty() {
+        return new Conversations();
     }
 }

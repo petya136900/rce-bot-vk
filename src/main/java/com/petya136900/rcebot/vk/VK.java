@@ -898,6 +898,8 @@ public class VK {
 		sendApiRequest(urlHost,urlParams);
 	}
 	public static Conversations getConversationByid(Integer peerId) {
+		if(peerId<2000000001)
+			return Conversations.getEmpty();
 		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"messages.getConversationsById";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION
