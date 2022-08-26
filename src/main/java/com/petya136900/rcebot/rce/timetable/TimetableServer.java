@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
-
 import com.petya136900.rcebot.db.MySqlConnector;
 import com.petya136900.rcebot.pdfparser.PdfParser;
 import com.petya136900.rcebot.pdfparser.TimetablePDF;
@@ -24,6 +23,20 @@ public class TimetableServer {
 		this.date=date;
 		this.groupName=groupName;
 	}
+	public static Timetable getFromDB(String date, String groupName) throws TimetableException {
+		Timetable tt;
+		tt = MySqlConnector.getTimetableByDayAndGroup(date,groupName);
+		if(tt==null) {
+			tt = MySqlConnector.getTimetableByDayAndGroup(date,groupName.replace("-", "К-"));
+		}
+		if(tt==null) {
+			tt = MySqlConnector.getTimetableByDayAndGroup(date,groupName.replace("К-", "-"));
+		}
+		if(tt!=null)
+			tt.setFromDB(true);
+		return tt;
+	}
+
 	private void checkDate(String date) throws TimetableException {
 		TimetableDirectories.checkDirectories(date);
 		FileType[] types = MySqlConnector.getFileTypes(date);
@@ -133,16 +146,7 @@ public class TimetableServer {
 			}
 			Timetable tt = null;
 			try {
-				tt = MySqlConnector.getTimetableByDayAndGroup(this.date,groupName);
-				//System.out.println("TT 1 запрос");
-				if(tt==null) {
-					tt = MySqlConnector.getTimetableByDayAndGroup(this.date,groupName.replace("-", "К-"));
-					//System.out.println("TT 2 запрос");
-				}
-				if(tt==null) {
-					tt = MySqlConnector.getTimetableByDayAndGroup(this.date,groupName.replace("К-", "-"));
-					//System.out.println("TT 3 запрос");
-				}			
+				tt = getFromDB(this.date,this.groupName);
 			} catch(TimetableException te) {
 				if(checkRce) {
 					if(days.get(this.date)!=null) {

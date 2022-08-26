@@ -14,7 +14,6 @@ import com.petya136900.rcebot.vk.structures.Keyboard;
 import com.petya136900.rcebot.vk.structures.Payload;
 
 public class TimetableHandler implements HandlerInterface {
-	private String message;
 	private String date;
 	private String groupName;
 	//private VK vkContent;
@@ -29,7 +28,7 @@ public class TimetableHandler implements HandlerInterface {
 	@Override
 	public void handle(VK vkContent) {
 		//this.vkContent=vkContent;
-		this.message=vkContent.getVK().getText().toLowerCase();
+		String message = vkContent.getVK().getText().toLowerCase();
 		Integer peerID = vkContent.getVK().getPeer_id();
 		switch(vkContent.getVK().getStage()) {
 			case("waiting_for_input_group"):
@@ -59,7 +58,7 @@ public class TimetableHandler implements HandlerInterface {
 				}
 				//vkContent.reply("Вы ввели: "+text);
 				try {
-					String addedCab = text.replaceAll("(\\$|'|;|\\\\|&|\"|\\*)", "").trim();
+					String addedCab = text.replaceAll("([$';\\\\&\"*])", "").trim();
 					if(addedCab.length()>16) {
 						addedCab = addedCab.substring(0,16);
 					}
@@ -79,8 +78,8 @@ public class TimetableHandler implements HandlerInterface {
 				}
 				return;
 		}
-		Boolean from_keyboard=false;
-		Boolean keyboardReplaced = true;
+		boolean from_keyboard=false;
+		Boolean keyboardReplaced;
 		try {
 			keyboardReplaced = MySqlConnector.getKeyboardReplaced(vkContent.getVK().getPeer_id());
 		} catch(TimetableException te) {
@@ -145,7 +144,7 @@ public class TimetableHandler implements HandlerInterface {
 							MessagesInfoStorage.sendUndUpdate(peerID,"Группы",null,CreateKeyboardHandler.generateGroupsMenu(vkContent,true));
 							break;
 						case("group_from_history"):
-							String addedGroup="";
+							String addedGroup;
 							try {
 								addedGroup = setGroup(peerID, vkContent.getVK().getText(), true);
 								vkContent.reply("Группа "+addedGroup+" установлена!",
@@ -226,26 +225,24 @@ public class TimetableHandler implements HandlerInterface {
 							MessagesInfoStorage.sendUndUpdate(peerID,"Уведомления",null,CreateKeyboardHandler.generateNotificationsMenu(peerID,isPM));
 							break;
 						case("notifications_toggle"):
-							ps=null;
 							try {
 								ps = MySqlConnector.getPeerSettings(peerID);
-								ps.setNotifications(ps.getNotifications()==0?1:0);
-								MySqlConnector.updatePeerSettings(ps);
-							} catch (Exception ignored) {
-								
-							}
+								if(ps!=null) {
+									ps.setNotifications(ps.getNotifications() == 0 ? 1 : 0);
+									MySqlConnector.updatePeerSettings(ps);
+								}
+							} catch (Exception ignored) {}
 							//vkContent.reply("Обновлено",null,CreateKeyboardHandler.generateNotificationsMenu(peerID,isPM));
 							MessagesInfoStorage.sendUndUpdate(peerID,"Обновлено",null,CreateKeyboardHandler.generateNotificationsMenu(peerID,isPM));
 							break;
 						case("notifications_change_wm"):
-							ps=null;
 							try {
 								ps = MySqlConnector.getPeerSettings(peerID);
-								ps.setWorkMode(ps.getWorkMode()==0?1:0);
-								MySqlConnector.updatePeerSettings(ps);
-							} catch (Exception ignored) {
-								
-							}
+								if(ps!=null) {
+									ps.setWorkMode(ps.getWorkMode() == 0 ? 1 : 0);
+									MySqlConnector.updatePeerSettings(ps);
+								}
+							} catch (Exception ignored) {}
 							//vkContent.reply("Обновлено",null,CreateKeyboardHandler.generateNotificationsMenu(peerID,isPM));		
 							MessagesInfoStorage.sendUndUpdate(peerID,"Обновлено",null,CreateKeyboardHandler.generateNotificationsMenu(peerID,isPM));
 							break;
@@ -270,16 +267,15 @@ public class TimetableHandler implements HandlerInterface {
 							break;
 						case("notifications_set_time_selected"):
 							try {
-								Integer hour = Integer.parseInt(payload.getData()); 
+								int hour = Integer.parseInt(payload.getData());
 								if(hour>=0&hour<19) {
-									ps=null;
 									try {
 										ps = MySqlConnector.getPeerSettings(peerID);
-										ps.setNotifHour(hour);
-										MySqlConnector.updatePeerSettings(ps);
-									} catch (Exception ignored) {
-										
-									}
+										if(ps!=null) {
+											ps.setNotifHour(hour);
+											MySqlConnector.updatePeerSettings(ps);
+										}
+									} catch (Exception ignored) {}
 									//vkContent.reply("Обновлено",null,CreateKeyboardHandler.generateNotificationsMenu(peerID,isPM));
 									MessagesInfoStorage.sendUndUpdate(peerID,"Обновлено",null,CreateKeyboardHandler.generateNotificationsMenu(peerID,isPM));
 								} else {
@@ -304,7 +300,7 @@ public class TimetableHandler implements HandlerInterface {
 		}
 		if(RegexpTools.checkRegexp("звонк|звонок", message)) {
 			callRequest=true;
-			this.message=RegexpTools.removeFirstString(message, "звонок|звонки|звонок|звонк");
+			message =RegexpTools.removeFirstString(message, "звонок|звонки|звонок|звонк");
 		}
 		if(RegexpTools.checkRegexp("( для( ))+(.)*(( )на(( )|$))", message)) {
 			setGroupAndDate(message);	
@@ -324,7 +320,7 @@ public class TimetableHandler implements HandlerInterface {
 		try {
 			new TimetableClient().getTimetable(date,groupName,vkContent,callRequest,false,alex);
 		} catch(TimetableException te) {
-			Boolean isChat = vkContent.getVK().getPeer_id()>=2000000000;
+			boolean isChat = vkContent.getVK().getPeer_id()>=2000000000;
 			vkContent.reply(te.getMessage(),null,(((!keyboardReplaced)&(!from_keyboard))?(isChat?CreateKeyboardHandler.createDefaultChatKeyboard(vkContent.getVK().getPeer_id()):CreateKeyboardHandler.DEFAULT_PM_KEYBOARD):null));
 			if(!(te.getCode().equals(ExceptionCode.BAD_DAY))
 			&!(te.getCode().equals(ExceptionCode.BAD_GROUP))
@@ -340,9 +336,6 @@ public class TimetableHandler implements HandlerInterface {
 		}
 		groupName = groupName.trim();
 		groupName = TimetableClient.removeTrash(TimetableClient.toRus(groupName));
-		if(groupName==null) {
-			throw new IllegalArgumentException("Группа не может быть null");
-		}
 		if(groupName.length()>16) {
 			groupName=groupName.substring(0,16);
 		}
@@ -366,12 +359,11 @@ public class TimetableHandler implements HandlerInterface {
 		}
 	}
 	public static void loadDefaultKeyboardWithMessage(VK vkContent, String message, boolean showMessage) {
-		Boolean keyboardReplaced = null;
+		Boolean keyboardReplaced;
 		try {
 			keyboardReplaced = MySqlConnector.getKeyboardReplaced(vkContent.getVK().getPeer_id());
-		} catch(TimetableException te) {
-			keyboardReplaced=true;
-			return;
+		} catch(TimetableException ignored) {
+			keyboardReplaced = true;
 		}
 		if(keyboardReplaced) {
 			vkContent.reply(message);
@@ -396,15 +388,15 @@ public class TimetableHandler implements HandlerInterface {
 		this.date=message.substring(message.indexOf(AT)).replace(AT, "");
 	}
 	private void setDateAndGroup(String message) {
-		Integer atIndex=message.indexOf(AT);
-		Integer forIndex=message.indexOf(FOR);
+		int atIndex=message.indexOf(AT);
+		int forIndex=message.indexOf(FOR);
 		this.date=message.substring(atIndex,forIndex)
 				.replace(AT, "").replace(FOR, "");
 		this.groupName=message.substring(message.indexOf(FOR)).replace(FOR, "");
 	}
 	private void setGroupAndDate(String message) {
-		Integer atIndex=message.indexOf(AT);
-		Integer forIndex=message.indexOf(FOR);		
+		int atIndex=message.indexOf(AT);
+		int forIndex=message.indexOf(FOR);
 		this.groupName=message.substring(forIndex,atIndex)
 				.replace(FOR, "").replace(AT, "");
 		this.date=message.substring(message.indexOf(AT)).replace(AT, "");

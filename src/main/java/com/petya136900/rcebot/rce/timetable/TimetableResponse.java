@@ -1,5 +1,7 @@
 package com.petya136900.rcebot.rce.timetable;
 
+import com.petya136900.rcebot.vk.structures.MessageSendResponse;
+
 public class TimetableResponse {
 	private Boolean error;
 	private String errorDesc;
@@ -8,6 +10,8 @@ public class TimetableResponse {
 	private Boolean isReplace;
 	private String callReplaceMessage;
 	private Timetable timetable;
+	private MessageSendResponse.MessageInfo messageInfo = null;
+
 	public TimetableResponse(String dayMessage, String callReplaceMessage, Timetable timetable) {
 		this.dayMessage=dayMessage;
 		this.callReplaceMessage=callReplaceMessage;
@@ -53,7 +57,7 @@ public class TimetableResponse {
 		tr.setErrorDescRus(te.getMessage());
 		return tr;
 	}
-	public Boolean getIsReplace() {
+	public Boolean isReplace() {
 		return isReplace;
 	}
 	public void setIsReplace(Boolean isReplace) {
@@ -64,5 +68,11 @@ public class TimetableResponse {
 	}
 	public void setErrorDescRus(String errorDescRus) {
 		this.errorDescRus = errorDescRus;
+	}
+	public void setMessageInfo(MessageSendResponse.MessageInfo messageInfo) {
+		this.messageInfo=messageInfo;
+	}
+	public MessageSendResponse.MessageInfo getMessageInfo() {
+		return messageInfo;
 	}
 }

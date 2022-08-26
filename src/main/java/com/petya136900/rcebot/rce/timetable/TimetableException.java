@@ -69,17 +69,9 @@ public class TimetableException extends Exception {
 				"[ERROR] | В указанный день нет пар в этом кабинете");
 	}};
 	private static final long serialVersionUID = 5628085242170699675L;
-	private String message;
-	private String causeMethod;
+	private final String message;
 	private String causeString;
 	private Exception causedException;
-	public String getCauseMethod() {
-		if(causeMethod!=null) {
-			return causeMethod;
-		} else {
-			return "null";
-		}		
-	}
 	public String getCauseString() {
 		if(causeString!=null) {
 			return causeString;
@@ -90,9 +82,7 @@ public class TimetableException extends Exception {
 	public TimetableException(ExceptionCode code, String ...  additionValues) {
 		this.code=code;
 		Object[] addInfo = new Object[additionValues.length];
-		for(int i=0;i<additionValues.length;i++) {
-			addInfo[i]=additionValues[i];
-		}
+		System.arraycopy(additionValues, 0, addInfo, 0, additionValues.length);
 		this.message = String.format(descriptions.get(code),addInfo); 
 	}
 	public TimetableException(ExceptionCode code) {
@@ -103,7 +93,6 @@ public class TimetableException extends Exception {
 			Exception exc) {
 		this.code=code;
 		this.message = descriptions.get(code);
-		this.causeMethod=methodName;
 		this.causeString=localizedMessage;
 		this.setCausedException(exc);
 	}
@@ -111,11 +100,8 @@ public class TimetableException extends Exception {
 			Exception exc, String ...  additionValues) {
 		this.code=code;
 		Object[] addInfo = new Object[additionValues.length];
-		for(int i=0;i<additionValues.length;i++) {
-			addInfo[i]=additionValues[i];
-		}
-		this.message = String.format(descriptions.get(code),addInfo); 
-		this.causeMethod=methodName;
+		System.arraycopy(additionValues, 0, addInfo, 0, additionValues.length);
+		this.message = String.format(descriptions.get(code),addInfo);
 		this.causeString=localizedMessage;
 		this.setCausedException(exc);		
 	}	
@@ -127,9 +113,9 @@ public class TimetableException extends Exception {
 		return toString(getStackTrace());
 	}
 	private String toString(StackTraceElement[] stackTrace) {
-		StringBuilder sb = new StringBuilder("");
+		StringBuilder sb = new StringBuilder();
 		for(StackTraceElement stack : stackTrace) {
-			sb.append(stack.toString()+"\n");
+			sb.append(stack.toString()).append("\n");
 		}
 		return sb.toString();
 	}
