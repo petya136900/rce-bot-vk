@@ -17,7 +17,7 @@ public class RceBot {
 		AnsiConsole.systemInstall();
 	}
 	static String[] myBotNames = new String[] { // case-insensitive
-			"^бот",
+			"бот",
 			"рке",
 			"ркэ",
 			"rce_bot",
@@ -32,9 +32,9 @@ public class RceBot {
 		System.out.println(settings);
 		VK.setup(settings);
 		VK.setAdminID(550940196);
-		VK.addHandler("Hello!$",vkContent -> {
-			VK.sendMessage(vkContent.getVK().getPeer_id(), "World!");
-		});
+		VK.addHandler("Hello!$",vkContent ->
+				VK.sendMessage(vkContent.getVK().getPeer_id(), "World!")
+		);
 		VK.registerBasicHandlers(); // Register Handlers are located in HandlerMapping
 		VK.setDefaultHandler(new DefaultHandler("Я не понял тебя, возможно, ты пропустил слово Пары?\n"
 				+ "Например: Бот, Пары на завтра\n"+

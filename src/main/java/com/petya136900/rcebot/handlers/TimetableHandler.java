@@ -176,13 +176,6 @@ public class TimetableHandler implements HandlerInterface {
 							String dayAndOffset = payload.getData();
 							String day = dayAndOffset.split(",")[0];
 							String offset = dayAndOffset.split(",")[1];
-							/*
-							vkContent.reply(day,null,
-									CreateKeyboardHandler.createCabsOnDay(
-											day,
-											peerID,
-											Integer.parseInt(offset)));
-							*/
 							MessagesInfoStorage.sendUndUpdate(peerID,day,null,CreateKeyboardHandler.createCabsOnDay(
 									day,
 									peerID,
@@ -302,16 +295,22 @@ public class TimetableHandler implements HandlerInterface {
 			callRequest=true;
 			message =RegexpTools.removeFirstString(message, "звонок|звонки|звонок|звонк");
 		}
-		if(RegexpTools.checkRegexp("( для( ))+(.)*(( )на(( )|$))", message)) {
-			setGroupAndDate(message);	
-		} else if(RegexpTools.checkRegexp("( на( ))+(.)*(( )для(( )|$))", message)) {
-			setDateAndGroup(message);			
-		} else {
-			if(RegexpTools.checkRegexp("(( )на( ))", message)) {
-				setDate(message);
-			} else if(RegexpTools.checkRegexp("(( )для( ))", message)) {
-				setGroup(message);
+		boolean isChat = vkContent.getVK().getPeer_id()>=2000000000;
+		try {
+			if (RegexpTools.checkRegexp("( для( ))+(.)*(( )на(( )|$))", message)) {
+				setGroupAndDate(message);
+			} else if (RegexpTools.checkRegexp("( на( ))+(.)*(( )для(( )|$))", message)) {
+				setDateAndGroup(message);
+			} else {
+				if (RegexpTools.checkRegexp("(( )на( ))", message)) {
+					setDate(message);
+				} else if (RegexpTools.checkRegexp("(( )для( ))", message)) {
+					setGroup(message);
+				}
 			}
+		} catch (StringIndexOutOfBoundsException exception) {
+			TimetableException te = new TimetableException(ExceptionCode.BAD_QUERY);
+			vkContent.reply(te.getMessage(),null,getExceptionKeyboard(keyboardReplaced,from_keyboard,isChat,vkContent));
 		}
 		if(RegexpTools.checkRegexp("\\bмне\\b", message)) {
 			this.alex=true;
@@ -320,8 +319,7 @@ public class TimetableHandler implements HandlerInterface {
 		try {
 			new TimetableClient().getTimetable(date,groupName,vkContent,callRequest,false,alex);
 		} catch(TimetableException te) {
-			boolean isChat = vkContent.getVK().getPeer_id()>=2000000000;
-			vkContent.reply(te.getMessage(),null,(((!keyboardReplaced)&(!from_keyboard))?(isChat?CreateKeyboardHandler.createDefaultChatKeyboard(vkContent.getVK().getPeer_id()):CreateKeyboardHandler.DEFAULT_PM_KEYBOARD):null));
+			vkContent.reply(te.getMessage(),null,getExceptionKeyboard(keyboardReplaced,from_keyboard,isChat,vkContent));
 			if(!(te.getCode().equals(ExceptionCode.BAD_DAY))
 			&!(te.getCode().equals(ExceptionCode.BAD_GROUP))
 			&!(te.getCode().equals(ExceptionCode.SET_GROUP))
@@ -330,6 +328,14 @@ public class TimetableHandler implements HandlerInterface {
 			}
 		}
 	}
+
+	private Keyboard getExceptionKeyboard(boolean keyboardReplaced,
+										  boolean from_keyboard,
+										  boolean isChat,
+										  VK vkContent) {
+		return (((!keyboardReplaced)&(!from_keyboard))?(isChat?CreateKeyboardHandler.createDefaultChatKeyboard(vkContent.getVK().getPeer_id()):CreateKeyboardHandler.DEFAULT_PM_KEYBOARD):null);
+	}
+
 	public String setGroup(Integer peer_id, String groupName, Boolean changeSql) {
 		if(groupName==null) {
 			throw new IllegalArgumentException("Группа не может быть null");

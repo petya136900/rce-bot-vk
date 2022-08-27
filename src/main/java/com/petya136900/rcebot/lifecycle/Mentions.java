@@ -1,8 +1,6 @@
 package com.petya136900.rcebot.lifecycle;
 
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.petya136900.rcebot.tools.RegexpTools;
 import com.petya136900.rcebot.vk.VK;
@@ -17,7 +15,7 @@ public class Mentions {
 	public static String getNames() {
 		return names;
 	}
-	public  Boolean isMention(VKJson vkJson) {
+	public static Boolean isMention(VKJson vkJson) {
 		String oldMessage = vkJson.getText();
 		if(oldMessage==null) {
 			oldMessage="";
@@ -35,29 +33,21 @@ public class Mentions {
 			}
 		}
 		if(oldMessage.length()!=0) {
-			if(oldMessage.length()>40) {
-				oldMessage=oldMessage.substring(0,40);
+			if(oldMessage.length()>100) {
+				oldMessage=oldMessage.substring(0,99);
 			}
-			String regexp = "\\b("+names+")+((.)+?(\\b|$)|$)"; 
-			// String regexp = "(?i)^("+names+")+(.)?($|(\\b))+";
-			String regexp2="(?i)^(\\[("+names+")\\|.+?\\]+(,)?)";
-			if(checkLocalRegexp(regexp2,oldMessage,vkJson)) {
+			String mentionRegexp = "^("+names+")+([ ,\\\\b])*($| )";
+			String bracketMentionRegexp="^\\[("+names+")\\|+.*]+([ ,])*($| |)";
+			if(checkLocalRegexp(bracketMentionRegexp,oldMessage,vkJson)) {
 				return true;
-			} else if(checkLocalRegexp(regexp,oldMessage,vkJson)) {
-				return true;
-			} else {
-				return false;
-			}
+			} else return checkLocalRegexp(mentionRegexp, oldMessage, vkJson);
 		} else {
 			return false;
 		}
 	}
-	private boolean checkLocalRegexp(String regexp,String oldMessage,VKJson vkJson) {
-		Pattern pattern = Pattern.compile(regexp, Pattern.UNICODE_CASE);
-		Matcher matcher=pattern.matcher(oldMessage.toLowerCase());
-		if(matcher.find()) {
-			vkJson.setText(RegexpTools.removeFirstString(vkJson.getText(), regexp)); // Remove
-														                        // Mention
+	private static boolean checkLocalRegexp(String regexp,String oldMessage,VKJson vkJson) {
+		if(RegexpTools.checkRegexp(regexp,oldMessage)) {
+			vkJson.setText(RegexpTools.removeFirstString(vkJson.getText().toLowerCase(), regexp)); // Remove mention
 			return true;
 		} else {
 			return false;

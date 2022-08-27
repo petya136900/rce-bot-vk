@@ -1,9 +1,9 @@
 package com.petya136900.rcebot.tools;
 
-import java.util.regex.Pattern;
+import com.google.re2j.Pattern;
 
 public class StoredString {
-	private String text;
+	private final String text;
 	public StoredString(String text) {
 		this.text=text;
 	}

@@ -23,7 +23,8 @@ public class TimetableException extends Exception {
 		RCE_UNAVAILABLE, 
 		TIMETABLE_FOR_GROUP_NOT_FOUND, 
 		BAD_CAB, 
-		EMPTY_CAB
+		EMPTY_CAB,
+		BAD_QUERY
 	}
 	private static final HashMap<ExceptionCode, String> descriptions = new HashMap<ExceptionCode, String>(){
 		private static final long serialVersionUID = 560431342273821838L;
@@ -67,6 +68,8 @@ public class TimetableException extends Exception {
 				"[ERROR] | Кабинет не указан или некорректен");
 			put(ExceptionCode.EMPTY_CAB,
 				"[ERROR] | В указанный день нет пар в этом кабинете");
+			put(ExceptionCode.BAD_QUERY,
+				"[ERROR] | Запрос построен некорректно \n Ознакомьтесь с https://vk.com/@rce_bot-introduce");
 	}};
 	private static final long serialVersionUID = 5628085242170699675L;
 	private final String message;
