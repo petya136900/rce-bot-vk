@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import com.petya136900.rcebot.other.Tokens;
 import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,15 +30,31 @@ public class FurryHandler implements HandlerInterface {
 	private static final String SAUCENAO_USER = Tokens.SAUCENAO_USER_ID;
 	private static final String SAUCENAO_TOKEN = Tokens.SAUCENAO_TOKEN;
 	private static final String SAUCENAO_AUTH = Tokens.SAUCENAO_AUTH;
+	private static final long REQUEST_TIMEOUT = 750;
 	private Boolean nf=true;
 	@Override
 	public  void     handle(VK vkContent) {
-		ArrayList<String> urls = new ArrayList<String>();
-		analyzeAll(urls,vkContent.getVK().getMessage());
+		ArrayList<String> urls = new ArrayList<>();
+		VKMessage[] messages = VK.getByConversationMessageId(vkContent.getVK().getPeer_id(), vkContent.getVK().getConversation_message_id());
+		analyzeAll(urls,messages);
 		if(nf) {
 			vkContent.reply("Я не увидел изображения в твоем сообщении :с");
 		} else {
-			findFurC(urls,vkContent);
+			try {
+				findFurC(urls, vkContent);
+			} catch (Exception e) {
+				vkContent.reply(
+						String.format("[ERROR] Ресурс недоступен | %s" +
+								"\nПопробуйте позднее или уменьшите количество изображений",
+								(e instanceof HttpStatusException)?
+									"Status: "+((HttpStatusException)e).getStatusCode():""
+								));
+			}
+		}
+	}
+	private void analyzeAll(ArrayList<String> urls, VKMessage[] messages) {
+		for(VKMessage message : messages) {
+			analyzeAll(urls,message);
 		}
 	}
 	private void analyzeAll(ArrayList<String> urls, VKMessage message) {
@@ -61,17 +78,21 @@ public class FurryHandler implements HandlerInterface {
 			}
 		}		
 	}	
-	private void     findFurC(ArrayList<String> urls, VK vkContent) {
+	private void     findFurC(ArrayList<String> urls, VK vkContent) throws Exception {
 		if(urls.size()>0) {
 			nf=false;
 			for(String url : urls) {
 				findFur(url,vkContent);
+				if(urls.iterator().hasNext()) {
+					synchronized (SAUCENAO_AUTH) {
+						try {SAUCENAO_AUTH.wait(REQUEST_TIMEOUT);}catch(Exception ignored){}
+					}}
 			}				
 		} else {
 			nf=true;
 		}
 	}
-	private void     findFur(String imgURL, VK vk) {
+	private void     findFur(String imgURL, VK vk) throws Exception {
 		MessageInfo mi1 = vk.reply("Загрузка..");
 		Document page = loadURL(imgURL, null,vk);
 		mi1 = mi1.editMessageOrDeleteAndReply("Парсинг результатов..");
@@ -282,31 +303,37 @@ public class FurryHandler implements HandlerInterface {
 		}
 		return html;
 	}
-	private Document loadURL(String imgUrl, Integer dbNum,VK vk) {
-		Document htmlResponse=null;
-		if(dbNum==null) {
-			dbNum=29;
+	private Document loadURL(String imgUrl, Integer dbNum,VK vk) throws Exception {
+		int retryCount = 0;
+		Document htmlResponse = null;
+		if (dbNum == null) {
+			dbNum = 29;
 		}
 		String urlHost = "https://saucenao.com/search.php";
-		try {
-			//String urlR = urlHost+"?url="+imgUrl;
-			String urlR =urlHost;
-			Connection conJsoup = Jsoup.connect(urlR);
-			conJsoup.cookie("token", SAUCENAO_TOKEN);
-			conJsoup.cookie("user", SAUCENAO_USER);
-			conJsoup.cookie("auth", SAUCENAO_AUTH);
-			conJsoup.data("url", imgUrl);
-			conJsoup.data("frame","1");
-			conJsoup.data("hide","0");
-			conJsoup.data("database","999");
-			htmlResponse = conJsoup.get();
-			//System.out.println(htmlResponse.toString());
-			return htmlResponse;
-		} catch (IOException e) {
-			System.err.println("smthgwntwrng");
-			e.printStackTrace();
-			vk.reply("Произошла ошибка: \n"+e.getMessage());
+		Exception lastException = null;
+		while (++retryCount < 7) {
+			try {
+				String urlR = urlHost;
+				Connection conJsoup = Jsoup.connect(urlR);
+				conJsoup.cookie("token", SAUCENAO_TOKEN);
+				conJsoup.cookie("user", SAUCENAO_USER);
+				conJsoup.cookie("auth", SAUCENAO_AUTH);
+				conJsoup.data("url", imgUrl);
+				conJsoup.data("frame", "1");
+				conJsoup.data("hide", "0");
+				conJsoup.data("database", "999");
+				htmlResponse = conJsoup.get();
+				return htmlResponse;
+			} catch (HttpStatusException e) {
+				try {
+					Thread.sleep(REQUEST_TIMEOUT * (retryCount));
+				} catch (Exception ignored) {
+				}
+				lastException = e;
+			} catch (IOException e) {
+				throw e;
+			}
 		}
-		return null;
+		throw lastException;
 	}	
 }
