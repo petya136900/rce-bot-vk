@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.re2j.Pattern;
-import com.petya136900.rcebot.handlers.CummHandler;
 import com.petya136900.rcebot.handlers.BotSettingsHandler;
 import com.petya136900.rcebot.handlers.CabOnDayHandler;
 import com.petya136900.rcebot.handlers.CabinetHandler;
@@ -32,7 +31,6 @@ import com.petya136900.rcebot.handlers.NotifyHandlerHelp;
 import com.petya136900.rcebot.handlers.NotifyHandlerHelp2;
 import com.petya136900.rcebot.handlers.PairOnWeekHandler;
 import com.petya136900.rcebot.handlers.PayloadTextHandler;
-import com.petya136900.rcebot.handlers.RaccoonRemoteHandler;
 import com.petya136900.rcebot.handlers.RegTestHandler;
 import com.petya136900.rcebot.handlers.RememberHandler;
 import com.petya136900.rcebot.handlers.SayHandler;
@@ -66,11 +64,6 @@ public class HandlerMapping {
 		addHandler("((транс|trans)+(([^a-zа-я])*)?)$",new TransHandler());
 		addHandler("((debug)+(([^a-zа-я])*)?)$",new DebugHandler());
 		addHandler("^(furry|фурри|anime|аниме)",new FurryHandler());
-		//
-		addHandler("^(remote)", new RaccoonRemoteHandler());
-		addPayloadHandler("^(remote)",new RaccoonRemoteHandler());
-		addHandler("^(cumm)", new CummHandler());
-		//
 		addHandler("(^settings)",new BotSettingsHandler());
 		addHandler("(^stop|стоп)$",new StopHandler());
 		addHandler("(^(погода|weather))",new WeatherHandler());
