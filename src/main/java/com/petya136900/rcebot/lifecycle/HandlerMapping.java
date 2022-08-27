@@ -2,10 +2,10 @@ package com.petya136900.rcebot.lifecycle;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.re2j.Pattern;
 import com.petya136900.rcebot.handlers.CummHandler;
 import com.petya136900.rcebot.handlers.BotSettingsHandler;
 import com.petya136900.rcebot.handlers.CabOnDayHandler;
@@ -75,7 +75,7 @@ public class HandlerMapping {
 		addHandler("(^stop|стоп)$",new StopHandler());
 		addHandler("(^(погода|weather))",new WeatherHandler());
 		addHandler("(^(hostname))",new HostNameHandler());
-		addHandler("^(time)",x->{x.reply(   new Date(System.currentTimeMillis()).toString()   );});
+		addHandler("^(time)",x-> x.reply(   new Date(System.currentTimeMillis()).toString()   ));
 		addHandler("(^(spam))",new SpamHandler());
 		addHandler("(^спутник|geo)",new GeoHandler());		
 		addHandler("(ув.домлен.)",new NotifyHandler());
@@ -144,7 +144,7 @@ public class HandlerMapping {
 			try {Thread.sleep(1000);} catch (Exception e) {e.printStackTrace();}
 			VK.editMessage(messageInfo.getPeer_id(),messageInfo.getConversation_message_id(),("MessageInfo: "+JsonParser.toJson(messageInfo)));
 			try {Thread.sleep(1000);} catch (Exception e) {e.printStackTrace();}
-			StringBuffer sb = new StringBuffer("");
+			StringBuffer sb = new StringBuffer();
 			"Hello World!".chars()
 	            .mapToObj(Character::toChars)
 	            .forEach(z->{

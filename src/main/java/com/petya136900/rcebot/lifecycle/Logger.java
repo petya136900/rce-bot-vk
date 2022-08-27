@@ -1,22 +1,19 @@
 package com.petya136900.rcebot.lifecycle;
-import static org.fusesource.jansi.Ansi.*;
-import static org.fusesource.jansi.Ansi.Color.*;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import com.petya136900.rcebot.tools.JsonParser;
-import com.petya136900.rcebot.vk.structures.*;
-import org.fusesource.jansi.AnsiConsole;
 
 import com.petya136900.rcebot.db.MySqlConnector;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
 import com.petya136900.rcebot.vk.VK;
+import com.petya136900.rcebot.vk.structures.*;
+import org.fusesource.jansi.AnsiConsole;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import static org.fusesource.jansi.Ansi.Color.*;
+import static org.fusesource.jansi.Ansi.ansi;
 
 public class Logger extends Thread {
 	private static Boolean sendToVk=true;
 	private static Boolean checkSql=true;
-	private LOGTYPE type;
+	private final LOGTYPE type;
 	private String message;
 	private VK vk;
 	private static Integer logsPeerID=2000000052;
@@ -29,7 +26,7 @@ public class Logger extends Thread {
 	public enum LOGTYPE {
 		INFO,
 		NEW_MESSAGE, 
-		MESSAGE_EVENT;
+		MESSAGE_EVENT
 	}
 	
 	static {
@@ -130,7 +127,7 @@ public class Logger extends Thread {
 		Integer peer_id=message.getPeer_id();
 		String groupName=null;
 		//StringBuilder sb = new StringBuilder("");
-		Boolean rootQ=true;
+		boolean rootQ=true;
 		if(sb==null) {
 			sb = new StringBuilder("");
 		} else {

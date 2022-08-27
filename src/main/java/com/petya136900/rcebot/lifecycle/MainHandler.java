@@ -4,16 +4,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Pattern;
-
+import com.google.re2j.Pattern;
 import com.petya136900.rcebot.tools.JsonParser;
 import com.petya136900.rcebot.tools.RegexpTools;
 import com.petya136900.rcebot.vk.VK;
 import com.petya136900.rcebot.vk.structures.Payload;
 
 public class MainHandler implements Runnable {
-	private VK parsedMessage;
-	private final static CopyOnWriteArrayList<String> eventList = new CopyOnWriteArrayList <String>();
+	private final VK parsedMessage;
+	private final static CopyOnWriteArrayList<String> eventList = new CopyOnWriteArrayList<>();
 	/**
 	 * default true
 	 */
@@ -27,7 +26,7 @@ public class MainHandler implements Runnable {
 	 * default false
 	 */
 	private static Boolean testMode=false;
-	private static ConcurrentHashMap<String, Stage> stages = new ConcurrentHashMap<String, Stage>();
+	private static ConcurrentHashMap<String, Stage> stages = new ConcurrentHashMap<>();
 	/**
 	 * default true
 	 */
@@ -51,7 +50,7 @@ public class MainHandler implements Runnable {
 		if(checkEventID(parsedMessage.getVK().getEvent_id())) { // Avoid duplicating messages
 			Integer peer_id=null;
 			Integer from_id=null;
-			Boolean messageEvent=false;
+			boolean messageEvent=false;
 			if(parsedMessage.getVK().getType().equalsIgnoreCase("message_new")) {
 				peer_id=parsedMessage.getVK().getPeer_id();
 				from_id=parsedMessage.getVK().getFrom_id();
@@ -62,8 +61,10 @@ public class MainHandler implements Runnable {
 				messageEvent=true;
 				Logger.printNewEvent(parsedMessage);
 			}
+			if(peer_id==null)
+				return;
 			if(messageEvent|peer_id.equals(from_id) // If pm
-			|(messageEvent?false:(new Mentions().isMention(parsedMessage.getVK())))) { // If mention
+			|(!messageEvent && (Mentions.isMention(parsedMessage.getVK())))) { // If mention
 				if(!messageEvent&&readByDefault) {
 					VK.markAsRead(parsedMessage.getVK().getPeer_id());
 				}
@@ -74,21 +75,16 @@ public class MainHandler implements Runnable {
 						parsedMessage.reply(MESSAGE_DEV);	
 					}
 				}
-			} else {
-				//parsedMessage.reply("No mention");
 			}
+
 		}
 	}
 	public static Boolean getTestMode() {
 		return testMode;
 	}
 	public static Boolean checkAdmin(Integer id) {
-		if(id.equals(VK.getAdminID())|
-				id.equals(VK.getHelperID())) {
-			return true;
-		} else {
-			return false;
-		}
+		return id.equals(VK.getAdminID()) |
+				id.equals(VK.getHelperID());
 	}
 	public static boolean checkTestMode(Integer from_id, Boolean send, Integer peer_id) {
 		if (testMode&(checkAdmin(from_id))) {
@@ -108,11 +104,9 @@ public class MainHandler implements Runnable {
 			}
 		}
 		//vkData.reply("Message come: \n"+text);
-		Boolean handlerNotFound=true;
-		Boolean callbackNotSupportedByClient=false;
-		Boolean fromKeyboard=false;
-		//System.out.println("Find handler for "+
-				//(text.length()>15?text.substring(0,15):text));
+		boolean handlerNotFound=true;
+		boolean callbackNotSupportedByClient=false;
+		boolean fromKeyboard=false;
 		String key = (callback?(vkData.getVK().getObject().getPeer_id().toString()):(vkData.getVK().getPeer_id()))
 					 +"_"
 					 +(callback?(vkData.getVK().getObject().getUser_id().toString()):(vkData.getVK().getFrom_id()));
@@ -151,16 +145,8 @@ public class MainHandler implements Runnable {
 			// stages
 			vkData.getVK().setHandler(prevStage.getHandler());
 			vkData.getVK().setStage(prevStage.getName());
-			/*
-			try {
-				prevStage.getHandler().getClass().newInstance().handle(vkData);
-			} catch (InstantiationException | IllegalAccessException e) {
-				System.err.println("Can't create new Instance");
-			}
-			*/
 			prevStage.getHandler().handle(vkData);
 		} else {
-			//System.out.println("Новый запросик");
 			if(payload!=null) {
 				//System.out.println("payload!=null");
 				String handlerName;
@@ -196,7 +182,7 @@ public class MainHandler implements Runnable {
 				}
 			}
 			if(callback&ignoreUnknowsCallbacks) {
-				System.out.println("Unknown callback.. - "+payload.getHandler());
+				System.out.println("Unknown callback.. - "+ (payload != null ? payload.getHandler() : null));
 				return;
 			}
 			for(Entry<Pattern,HandlerInterface> entry : HandlerMapping.getHandlers().entrySet()) {
@@ -210,8 +196,6 @@ public class MainHandler implements Runnable {
 					if(performOnlyOneTask) {
 						break;
 					}
-				} else {
-					//vkData.reply("Regexp["+entry.getKey().toString()+"] - false");
 				}
 			}
 			// Default Handler if no one 
@@ -224,6 +208,7 @@ public class MainHandler implements Runnable {
 	}
 	private static HandlerInterface getInstance(HandlerInterface value) {
 		try {
+			//noinspection deprecation
 			return value.getClass().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			return value;
