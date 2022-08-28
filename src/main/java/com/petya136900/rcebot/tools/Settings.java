@@ -30,7 +30,8 @@ public class Settings {
         return new String(new char[m]).replace("\0", "*");
     }
     private String[] consoleArgs=new String[]{};
-    private String groupToken="";
+    private String groupToken;
+    private String pathToConfigFile;
     private Integer callBackPort=80;
     private Boolean useLongPoll=true;
     private String confirmCode="bb3ef7c2";
@@ -38,10 +39,11 @@ public class Settings {
     private String[] names = new String[] {};
     private Integer adminID=550940196;
     private String apiVersion= "5.130";
-
     public String getGroupToken() {
         return groupToken;
     }
+    public String getPathToConfigFile() { return pathToConfigFile; }
+    public void setPathToConfigFile(String pathToConfigFile) { this.pathToConfigFile = pathToConfigFile; }
 
     public void setGroupToken(String groupToken) {
         this.groupToken = groupToken;

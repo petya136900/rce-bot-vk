@@ -25,7 +25,7 @@ public class RceBot {
 	public static void main(String[] args) {
 		Settings settings = ConsoleParser.parseArgs(args);
 		settings.addBotNames(myBotNames); // The names to which the bot reacts in chats
-		settings.setGroupToken(Properties.getProperty("GROUP_TOKEN")); // contained within bot.ini file(INI format, any section)
+		// GROUP_TOKEN contained within bot.ini file(INI format, any section)
 		System.out.println(settings);
 		VK.setup(settings);
 		VK.setAdminID(550940196);

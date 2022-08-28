@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ConsoleParser {
-    private Settings consoleSettings = Settings.getInternalInstance();
+    private final Settings consoleSettings = Settings.getInternalInstance();
     public static Settings parseArgs(String[] args) {
         return new ConsoleParser().localParseArgs(args);
     }
@@ -18,15 +18,40 @@ public class ConsoleParser {
         for(int i=0;i<args.length;i++) {
             StoredString ss = RegexpTools.storeString(args[i]);
             if(ss.check("^(-?-?he?l?p?)$")) {
-                System.out.println(s("--help",sa("-h"),false,false,"Show this message"));
-                System.out.println(s("--token",sa("-t"),true,false,"Group token (Permissions: messages, offline)","--token 6b8e...53ef18f4"));
-                System.out.println(s("--longpoll",sa("-lp"),false,false,"Use Long Polling to receive a messages (by default)"));
-                System.out.println(s("--callback",sa("-cb"),true,false,"Use Call Back to receive a message","--callback 8080"));
-                System.out.println(s("--confirmcode",sa("-cd"),true,false,"Provide confirmation code for CallBack","--confirmcode b46df2y"));
-                System.out.println(s("--testmode",sa("--test","-tm"),false,false,"Test Mode, don't sends logs, reply only to admin"));
-                System.out.println(s("--names",sa("-n"),true,false,"Path to file with the names that the bot responds to, separated by commas","--names names.txt\n\t\n\tContent of names.txt: \n\t\t\t\trce,^bot,^l*l"));
-                System.out.println(s("--adminid",sa("-aid"),true,false,"Admin ID, only Integer","-aid 550940196"));
-                System.out.println(s("--apiversion",sa("-v"),true,false,"API version, by default 5.130"));
+                System.out.println(s("--help",sa("-h"),false,false,
+                        "Show this message"));
+                System.out.println(s("--config",sa("-c"),true,false,
+                        "Path to configuration bot.ini file",
+                        "--config /path/to/bot.ini (./bot.ini by default)" +
+                                "\n\t\n\tContent of bot.ini: " +
+                                "\n\t\t\t\t[required]" +
+                                "\n\t\t\t\tGROUP_TOKEN=GROUP_TOKEN_HERE" +
+                                "\n\t\t\t\t" +
+                                "\n\t\t\t\t[optional]" +
+                                "\n\t\t\t\tAGROMONITORING_API_KEY=API_KEY ; api.agromonitoring.com" +
+                                "\n\t\t\t\tOPENWEATHER_API_KEY=API_KEY ; api.openweathermap.org" +
+                                "\n\t\t\t\tSAUCENAO_USER_ID=USER_ID ; sauceNao" +
+                                "\n\t\t\t\tSAUCENAO_TOKEN=TOKEN ;" +
+                                "\n\t\t\t\tSAUCENAO_AUTH=AUTH ;" + "\n"));
+                System.out.println(s("--token",sa("-t"),true,false,
+                        "Group token (Permissions: messages, offline)","--token 6b8e...53ef18f4"));
+                System.out.println(s("--longpoll",sa("-lp"),false,false,
+                        "Use Long Polling to receive a messages (by default)"));
+                System.out.println(s("--callback",sa("-cb"),true,false,
+                        "Use Call Back to receive a message","--callback 8080"));
+                System.out.println(s("--confirmcode",sa("-cd"),true,false,
+                        "Provide confirmation code for CallBack","--confirmcode b46df2y"));
+                System.out.println(s("--testmode",sa("--test","-tm"),false,false,
+                        "Test Mode, don't sends logs, reply only to admin"));
+                System.out.println(s("--names",sa("-n"),true,false,
+                        "Path to file with the names that the bot responds to, separated by commas",
+                        "--names names.txt" +
+                                "\n\t\n\tContent of names.txt: " +
+                                "\n\t\t\t\trce,^bot,^l*l"));
+                System.out.println(s("--adminid",sa("-aid"),true,false,
+                        "Admin ID, only Integer","-aid 550940196"));
+                System.out.println(s("--apiversion",sa("-v"),true,false,
+                        "API version, by default 5.130"));
                 System.out.println(Ansi.ansi().fgDefault());
                 System.exit(0);
             } else if(ss.check("^(-t|--token)$")) {
@@ -68,6 +93,12 @@ public class ConsoleParser {
                 } else {
                     throw new IllegalArgumentException("You have not specified a --apiVersion");
                 }
+            } else if(ss.check("^(-c|--config)$")) {
+                if(args.length>(i+1)) {
+                    consoleSettings.setPathToConfigFile(args[i+1].trim()); i++;
+                } else {
+                    throw new IllegalArgumentException("You have not specified path to config-file");
+                }
             } else if(ss.check("^(-n|--names)$")) {
                 if(args.length>(i+1)) {
                     try {
@@ -87,6 +118,17 @@ public class ConsoleParser {
                 } else {
                     throw new IllegalArgumentException("You have not specified a --names");
                 }
+            }
+        }
+        if(consoleSettings.getPathToConfigFile()!=null) {
+            File configFile = new File(consoleSettings.getPathToConfigFile());
+            try {
+                Properties.addAdditionalProperties(configFile);
+                if(consoleSettings.getGroupToken()==null)
+                    consoleSettings.setGroupToken(Properties.getProperty("GROUP_TOKEN"));
+            } catch (Exception e) {
+                throw new IllegalArgumentException(String.format("Error[%s]: Doesn't exist or bad configuration file[%s]",
+                        e.getLocalizedMessage(),consoleSettings.getPathToConfigFile()));
             }
         }
         return consoleSettings;

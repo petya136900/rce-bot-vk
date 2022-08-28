@@ -88,9 +88,9 @@ public class VK {
 		try {
 			GROUP_ID = getCurrentGroup().getId();
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Failed to obtain GroupID | Check access_token in bot.ini");
+			throw new IllegalArgumentException("Failed to obtain GroupID | Check GROUP_TOKEN in bot.ini");
 		}
-		System.out.print("GROUP_ID: "+GROUP_ID);
+		System.out.println("GROUP_ID: "+GROUP_ID);
 		API_VERSION=apiVersion;
 	}
 	public enum ParseStatus {

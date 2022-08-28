@@ -16,7 +16,7 @@ public class Properties {
         } catch (Exception ignored) {}
     }
     public static Ini addAdditionalProperties(File propertiesFile) throws IOException {
-        Ini ini = new Ini(new File(DEFAULT_BOT_PROPERTIES_FILE));
+        Ini ini = new Ini(propertiesFile);
         return addAdditionalProperties(ini);
     }
     public static Ini addAdditionalProperties(Ini ini) {
