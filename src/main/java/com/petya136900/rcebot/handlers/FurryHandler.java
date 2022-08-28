@@ -1,26 +1,19 @@
 package com.petya136900.rcebot.handlers;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.petya136900.rcebot.other.Tokens;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import com.petya136900.rcebot.vk.structures.ResponseGen;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
+import com.petya136900.rcebot.other.Tokens;
 import com.petya136900.rcebot.lifecycle.HandlerInterface;
-//import com.petya136900.rcebot.tools.KeyboardAnimations;
-import com.petya136900.rcebot.tools.RegexpTools;
 import com.petya136900.rcebot.vk.VK;
-//import com.petya136900.rcebot.vk.structures.Field;
-import com.petya136900.rcebot.vk.structures.ResponseGen;
-//import com.petya136900.rcebot.vk.structures.User;
 import com.petya136900.rcebot.vk.structures.VKAttachment;
 import com.petya136900.rcebot.vk.structures.VKMessage;
 import com.petya136900.rcebot.vk.structures.MessageSendResponse.MessageInfo;
@@ -30,8 +23,92 @@ public class FurryHandler implements HandlerInterface {
 	private static final String SAUCENAO_USER = Tokens.SAUCENAO_USER_ID;
 	private static final String SAUCENAO_TOKEN = Tokens.SAUCENAO_TOKEN;
 	private static final String SAUCENAO_AUTH = Tokens.SAUCENAO_AUTH;
+	private static final String SAUCENAO_ENGINE_URI = "https://saucenao.com/search.php";
+	private static final String IGNORE_LINK = "saucenao.com/info.php";
 	private static final long REQUEST_TIMEOUT = 750;
+	private static final int MAX_UPLOAD_IMAGES = 10;
 	private Boolean nf=true;
+	static class SauceNaoResult { // .result
+		private String resultTitle; // .resultimage img[title] +
+		private String resultImageUrl; // .resultimage img[title] +
+		private String similarityInfo; // .resultsimilarityinfo +
+		private final ArrayList<String> srcUrl=new ArrayList<>(); // .resultmatchinfo .resultmiscinfo -> array of a[href] +
+		private Content content; //
+		public String getResultTitle() {
+			return resultTitle;
+		}
+		public String getResultImageUrl() {
+			return resultImageUrl;
+		}
+		public String getSimilarityInfo() {
+			return similarityInfo;
+		}
+		public ArrayList<String> getSrcUrl() {
+			return srcUrl;
+		}
+		public Content getContent() {
+			return content;
+		}
+		public SauceNaoResult(Element result) {
+			Elements resultImages = result.getElementsByClass("resultimage");
+			if(resultImages.size()>0) {
+				Elements selectorResultTitle = resultImages.get(0).select("img[title]");
+				if(selectorResultTitle.size()>0) {
+					resultTitle = selectorResultTitle.get(0).attr("title");
+					resultImageUrl = selectorResultTitle.get(0).attr("src");
+				}
+			}
+			Elements resultSimilarityInfo = result.getElementsByClass("resultsimilarityinfo");
+			if(resultSimilarityInfo.size()>0)
+				similarityInfo=resultSimilarityInfo.get(0).text();
+			Elements resultSrcUrl = result.getElementsByClass("resultmiscinfo");
+			resultSrcUrl.select("a").forEach(a->srcUrl.add(a.attr("href")));
+			Elements resultContent = result.getElementsByClass("resultcontent");
+			if(resultContent.size()>0)
+				content= new Content(resultContent.get(0));
+		}
+		static class Content { // .resultcontent +
+			private String strongTitle; // .resulttitle %text% & a[href] +
+			private final ArrayList<Part> parts = new ArrayList<>(); // .resultcontentcolumn !raw! -> split array by <br> (ignore .trim().length<1) +
+			public Content(Element element) {
+				Elements rTitle = element.getElementsByClass("resulttitle");
+				if(rTitle.size()>0)
+					strongTitle = rTitle.get(0).text();
+				element.select(".resulttitle").remove();
+				String rawParts = element.children().html();
+				Arrays.stream(rawParts.split("<br>")).forEach(part->{
+					part=part.trim();
+					if(part.length()>1)
+						parts.add(new Part(part));
+				});
+			}
+			public String getStrongTitle() {
+				return strongTitle;
+			}
+			public ArrayList<Part> getParts() {
+				return parts;
+			}
+			private static class Part {
+				private final String description; // +
+				private final ArrayList<String> urls = new ArrayList<>(); // check != IGNORE_LINK +
+				public Part(String part) {
+					Document html = Jsoup.parse(part);
+					description = html.text();
+					html.getElementsByTag("a").forEach(a->{
+						String link = a.attr("href");
+						if(!link.toLowerCase().contains(IGNORE_LINK))
+							urls.add(link);
+					});
+				}
+				public String getDescription() {
+					return description;
+				}
+				public ArrayList<String> getUrls() {
+					return urls;
+				}
+			}
+		}
+	}
 	@Override
 	public  void     handle(VK vkContent) {
 		ArrayList<String> urls = new ArrayList<>();
@@ -93,245 +170,96 @@ public class FurryHandler implements HandlerInterface {
 		}
 	}
 	private void     findFur(String imgURL, VK vk) throws Exception {
-		MessageInfo mi1 = vk.reply("Загрузка..");
-		Document page = loadURL(imgURL, null,vk);
-		mi1 = mi1.editMessageOrDeleteAndReply("Парсинг результатов..");
+		MessageInfo sentMessage = vk.reply("Загрузка..");
+		Document page = loadURL(imgURL);
 		page.select("[class=\"result hidden\"]").remove();
 		page.select("[id=\"result-hidden-notification\"]").remove();
-		//String picUrl;
-		String accuracy;
-		String creator;
-		String sourceUrl;
-		String previewURL;
-		String material;
-		String character;
-		String drawr;
-		String tweet;
-		String twitter;
-		String thread;
-		String devianID;
-		String devianCreator;
-		String pixivID;
-		String member;
-		String replyMessage="";
-		if(page!=null) {
-			//vk.reply("Searching for: "+imgURL);
-			//System.out.println("Searching for: "+imgURL);
-			Elements results = page.getElementsByClass("result");
-			mi1 = mi1.editMessageOrDeleteAndReply("Парсинг результатов.. [Найдено "+results.size()+"]");
-			//replyMessage+="Бот#2\nАртов найдено: "+results.size()+"\n";
-			//for(Element result : results) {
-			ArrayList<String> previewURLs = new ArrayList<String>();
-			for(int resCount=0;resCount<results.size();resCount++) {	
-				Element result = results.get(resCount);
-				//replyMessage+="Арт#"+(resCount+1);
-				//System.out.println("Art#"+(resCount+1));
-				//picUrl=result.getElementsByClass("resultimage").get(0).
-				//		getElementsByTag("a").get(0).getElementsByTag("img").get(0).attr("src");
-				accuracy=null;
-				creator=null;
-				sourceUrl=null;
-				previewURL=null;
-				material=null;
-				drawr=null;
-				thread=null;
-				tweet=null;
-				twitter=null;
-				character=null;
-				devianID=null;
-				devianCreator=null;
-				pixivID=null;
-				member=null;
-				//replyMessage+="Нашёл: "+picUrl;
-				//System.out.println(picUrl);
-				accuracy = result.getElementsByClass("resultsimilarityinfo").get(0).text();
-				replyMessage+="#"+(resCount+1)+" [Совпадение "+accuracy+"]";
-				try {
-					previewURL = result.getElementsByClass("resultimage").get(0).getElementsByTag("img").attr("src");
-					if(previewURL!=null&&previewURL.length()>1) {
-						previewURLs.add(previewURL);
-					}
-				} catch (Exception e) {
-					//
-				}
-				Elements title = result.getElementsByClass("resulttitle");
-				if(title.size()>0) {
-					creator=title.get(0).text();
-					creator = (RegexpTools.checkRegexp("Creator: ", creator)) ?
-							creator.replace("Creator: ","Автор: ") :
-								"Арт: "+creator;
-					replyMessage+="\n"+creator;
-				}
-				Elements contents = result.getElementsByClass("resultcontentcolumn");
-				for(Element content : contents) {
-					String htmlCont=content.getAllElements().html();
-					Document sourceUrlDoc = getParsedHtml("Source",htmlCont);
-					if(sourceUrlDoc!=null) {
-						sourceUrl="\n"+"Источник: ";
-						for(Element ss : sourceUrlDoc.getElementsByTag("a")) {
-							sourceUrl+=ss.attr("href");
-						}
-						replyMessage+=sourceUrl;
-					}
-					Document tweetDoc = getParsedHtml("Tweet ID",htmlCont);
-					if(tweetDoc!=null) {
-						try {
-							tweet="\n"+String.format("Tweet: %s",tweetDoc.getElementsByTag("a").get(0).attr("href"));
-							replyMessage+=tweet;
-						} catch (Exception ignored) {}
-					}	
-					Document twitterDoc = getParsedHtml("Twitter",htmlCont);
-					if(twitterDoc!=null) {
-						try {
-							Element a = twitterDoc.getElementsByTag("a").get(0);
-							twitter="\n"+String.format("Twitter(%s): %s",a.text(),a.attr("href"));
-							replyMessage+=twitter;
-						} catch (Exception ignored) {}
-					}
-					Document drawrDoc = getParsedHtml("Drawr ID",htmlCont);
-					if((drawrDoc!=null&&drawrDoc.getElementsByTag("a").size()>0)) {
-						try {
-							drawr="\n"+String.format("Drawr(%s): ",drawrDoc.getElementsByTag("a").get(0).text()+"")+" "+
-									drawrDoc.getElementsByTag("a").get(0).attr("href");
-							replyMessage+=drawr;
-						} catch (Exception ignored) {}
-					}
-					Document threadDoc = getParsedHtml("Thread",htmlCont);
-					if(threadDoc!=null) {
-						try {
-							thread="\n"+String.format("Thread(%s): ",threadDoc.getElementsByTag("a").get(0).text()+"")+" "+
-									threadDoc.getElementsByTag("a").get(0).attr("href");
-							replyMessage+=thread;
-						} catch (Exception ignored) {}
-					}		
-					Document materialDoc = getParsedHtml("Material",htmlCont);
-					if(materialDoc!=null) {
-						material="\n"+"Откуда: ";
-						material+=materialDoc.text().replace("Material: ","").trim();
-						replyMessage+=material;
-					}					
-					Document characterDoc = getParsedHtml("Characters",htmlCont);
-					if(characterDoc!=null) {
-						character="\n"+"Персонаж: ";
-						character+=characterDoc.text().replace("Characters: ","").trim();
-						replyMessage+=character;
-					}					
-					Document devianIDDoc = getParsedHtml("dA ID",htmlCont);
-					if(devianIDDoc!=null) {
-						try {
-							devianID="\n"+"DevianArt: ";
-							devianID+=devianIDDoc.getElementsByTag("a").get(0).attr("href");
-							replyMessage+=devianID;
-						} catch (Exception ignored) {}
-					}						
-					Document devianCreatorDoc = getParsedHtml("Author",htmlCont);
-					if(devianCreatorDoc!=null) {
-						devianCreator="\n"+"Автор";
-						Elements links=devianCreatorDoc.getElementsByTag("a");
-						if(links.size()>0) {
-							devianCreator+="("+links.get(0).text()+"): ";
-							devianCreator+=links.get(0).attr("href");
-						} else {
-							devianCreator+=": ";
-							devianCreator+=devianCreatorDoc.text();
-						}
-						replyMessage+=devianCreator;
-					}	
-					Document pixivIDDoc = getParsedHtml("Pixiv ID",htmlCont);
-					if(pixivIDDoc!=null) {
-						try {
-							pixivID="\n"+"Pixiv: ";
-							pixivID+=pixivIDDoc.getElementsByTag("a").get(0).attr("href");
-							replyMessage+=pixivID;
-						} catch (Exception ignored) {}
-					}		
-					Document memberDoc = getParsedHtml("Member",htmlCont);
-					if(memberDoc!=null) {
-						try {
-							member="\n"+"Автор("+memberDoc.getElementsByTag("a").get(0).text()+"): ";
-							member+=memberDoc.getElementsByTag("a").get(0).attr("href");
-							replyMessage+=member;
-						} catch (Exception ignored) {}
-					}							
-				}
-				if(replyMessage.length()>1) {
-					replyMessage+="\n\n";
-				}
-			}
-			ResponseGen<Integer> intStore = new ResponseGen<Integer>();
-			ResponseGen<MessageInfo> miS = new ResponseGen<MessageInfo>(); 
-			miS.setResponse(mi1);
-			intStore.setResponse(0);
-			String[] attachs = previewURLs.stream()
-				.map(x->{
-					try {
-						intStore.setResponse(intStore.getResponse()+1);
-						miS.setResponse(miS.getResponse().editMessageOrDeleteAndReply("Загрузка превью ["+(intStore.getResponse())+"/"+previewURLs.size()+"]"));
-						return VK.getUploadedPhoto(vk.getVK().getPeer_id(), new URL(x)).toStringAttachment();
-					} catch (Exception e) {
-						return null;
-					}
+		Elements results = page.getElementsByClass("result");
+		sentMessage.editMessageOrDeleteAndReply("Парсинг результатов.. [Найдено "+results.size()+"]");
+		ArrayList<SauceNaoResult> sauces=new ArrayList<>();
+		results.forEach(x->
+			sauces.add(new SauceNaoResult(x))
+		);
+		ResponseGen<Integer> intStore = new ResponseGen<>();
+		ResponseGen<MessageInfo> miS = new ResponseGen<>();
+		miS.setResponse(sentMessage);
+		intStore.setResponse(0);
+		StringBuilder sb=new StringBuilder();
+		String[] previewURLs = sauces
+				.stream()
+				.map(sauce -> {
+					intStore.setResponse(intStore.getResponse()+1);
+					SauceNaoResult.Content content = sauce.getContent();
+					//noinspection StringConcatenationInsideStringBufferAppend
+					sb.append("#"+(intStore.getResponse())+" [Совпадение "+sauce.getSimilarityInfo()+"]" + "\n" +
+							(sauce.getResultTitle()!=null?(sauce.getResultTitle().length()>0?("Файл: "+sauce.getResultTitle()+"\n"):""):"") +
+							(content.getStrongTitle()!=null?(content.getStrongTitle().length()>0?content.getStrongTitle()+"\n":""):"") +
+							content.getParts()
+									.stream()
+									.map(part-> (part.getDescription()!=null?(part.getDescription().length()>0?part.getDescription()+"\n":""):"") +
+										part.getUrls()
+											.stream()
+											.filter(link->link!=null&&link.length()>0)
+											.collect(Collectors.joining("\n")))
+										.filter(c->c.length()>0)
+										.collect(Collectors.joining("\n")) + "\n" +
+											(sauce.getSrcUrl().size()>0?"Источник: "+sauce.getSrcUrl()
+											.stream()
+											.filter(url->url!=null&&url.length()>0)
+											.limit(MAX_UPLOAD_IMAGES)
+											.collect(Collectors.joining("\n"))
+											:"")+"\n\n");
+					return sauce.getResultImageUrl();
 				})
-				.filter(x->x!=null)
+				.filter(Objects::nonNull)
 				.limit(10)
 				.toArray(String[]::new);
-			if(attachs.length>0) {
-				replyMessage+="[Превью]";
-			}
-			mi1 = miS.getResponse();
-			if(replyMessage.length()>1) {
-				//mi1.deleteMessage();
-				//vk.reply(replyMessage,attachs.length>0?attachs:null);
-				mi1.editMessageOrDeleteAndReply(replyMessage,attachs.length>0?attachs:null);
-			} else {
-				mi1.editMessageOrDeleteAndReply("Арт не найден");
-			}
-		} 
-	}
-	private Document getParsedHtml(String string, String htmlCont) {
-		htmlCont=htmlCont.replaceAll("></d", ">ъ</d");
-		htmlCont=htmlCont.replaceAll("><st", ">ъ<st");		
-		Pattern patternS = Pattern.compile("(<strong>"+string+": <\\/strong>)[^ъ]+(<br>)");
-		Matcher matcherS = patternS.matcher(htmlCont);
-		String result = matcherS.find()?matcherS.group():null;
-		Document html = null;
-		if(result!=null) {
-			result=result.replaceAll(">ъ</d", "></d");
-			result=result.replaceAll(">ъ<st", "><st");
-			html = Jsoup.parse(result);
-			//System.out.println(html.text());
+		intStore.setResponse(0);
+		String[] attachs = Stream.of(previewURLs)
+			.map((String x) ->{
+				try {
+					intStore.setResponse(intStore.getResponse()+1);
+					miS.getResponse()
+						.editMessageOrDeleteAndReply(
+				"Загрузка превью ["+intStore.getResponse()+"/"+previewURLs.length+"]");
+					return VK.getUploadedPhoto(vk.getVK().getPeer_id(), new URL(x)).toStringAttachment();
+				} catch (Exception e) {
+					return null;
+				}
+			})
+			.filter(Objects::nonNull)
+			.limit(10)
+			.toArray(String[]::new);
+		if(attachs.length>0) {
+			sb.append("[Превью]");
 		}
-		return html;
+		if(sb.length()>1) {
+			miS.getResponse().editMessageOrDeleteAndReply(sb.toString(),attachs.length>0?attachs:null);
+		} else {
+			miS.getResponse().editMessageOrDeleteAndReply("Арт не найден");
+		}
 	}
-	private Document loadURL(String imgUrl, Integer dbNum,VK vk) throws Exception {
+	private Document loadURL(String imgUrl) throws Exception {
 		int retryCount = 0;
-		Document htmlResponse = null;
-		if (dbNum == null) {
-			dbNum = 29;
-		}
-		String urlHost = "https://saucenao.com/search.php";
 		Exception lastException = null;
 		while (++retryCount < 7) {
 			try {
-				String urlR = urlHost;
-				Connection conJsoup = Jsoup.connect(urlR);
+				Connection conJsoup = Jsoup.connect(SAUCENAO_ENGINE_URI);
 				conJsoup.cookie("token", SAUCENAO_TOKEN);
 				conJsoup.cookie("user", SAUCENAO_USER);
 				conJsoup.cookie("auth", SAUCENAO_AUTH);
+				conJsoup.cookie("hide","0");
+				conJsoup.cookie("database","999");
 				conJsoup.data("url", imgUrl);
 				conJsoup.data("frame", "1");
 				conJsoup.data("hide", "0");
 				conJsoup.data("database", "999");
-				htmlResponse = conJsoup.get();
-				return htmlResponse;
+				return conJsoup.get();
 			} catch (HttpStatusException e) {
 				try {
 					Thread.sleep(REQUEST_TIMEOUT * (retryCount));
-				} catch (Exception ignored) {
-				}
+				} catch (Exception ignored) {}
 				lastException = e;
-			} catch (IOException e) {
-				throw e;
 			}
 		}
 		throw lastException;
