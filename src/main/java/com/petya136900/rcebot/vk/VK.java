@@ -38,13 +38,11 @@ import com.petya136900.rcebot.vk.structures.VKAttachment.Photo;
 //import java.util.Arrays;
 
 public class VK {
-	private static String GROUP_TOKEN = "69a80441267147bd78286fc7c91540b263d5b2227313e9a4d39d72833d652d4f76d19e5b7c5a677ba950c"; // (GroupToken) Don't forget
-	private static String USER_TOKEN;
-	//https://oauth.vk.com/authorize?client_id=%CLIENTID%&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=offline,video&response_type=token&v=5.104
+	private static String GROUP_TOKEN = "token"; //
 	private static String API_VERSION = "5.104";
 	private static Integer GROUP_ID;
 	private static Integer ADMIN_ID;
-	private static final Integer helperID=301082236; // 165343046,301082236 ,40615707 (andy) 550940196 (pet)
+	private static final Integer helperID=301082236;
 	public final static Integer MAX_MESSAGE_LENGTH=3400;
 	private static final Integer SPAM_MAX_RETRY_TIME=10;
 	private static final Integer SPAM_DELAY_MS=300;
@@ -53,12 +51,9 @@ public class VK {
 
 	public static void setup(Settings settings) {
 		VK.setup(settings.getGroupToken(), // GROUP TOKEN (message permission)
-				settings.getGroupID(),
 				settings.getApiVersion());
-		if(settings.getGroupID()!=null)
-			settings.addBotName("club"+(settings.getGroupID()));
+		settings.addBotName("club"+GROUP_ID);
 		VK.registerNames(settings.getNames());
-		VK.setUserToken(settings.getUserToken());
 		VK.setAdminID(settings.getAdminID());
 		VK.setTestMode(getTestMode(),true);
 		VK.setCallbackConfirmationCode(settings.getConfirmCode());
@@ -88,9 +83,14 @@ public class VK {
 	public VK(VKJson update) {
 		this.vkJson=update;
 	}
-	public static void setup(String groupToken,Integer groupID,String apiVersion) {
-		GROUP_TOKEN=groupToken;
-		GROUP_ID=groupID;
+	private static void setup(String groupToken,String apiVersion) {
+		GROUP_TOKEN = groupToken;
+		try {
+			GROUP_ID = getCurrentGroup().getId();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Failed to obtain GroupID | Check access_token in bot.ini");
+		}
+		System.out.print("GROUP_ID: "+GROUP_ID);
 		API_VERSION=apiVersion;
 	}
 	public enum ParseStatus {
@@ -156,19 +156,19 @@ public class VK {
 		}
 		return this;
 	}
-	public static String getVideos(Integer owner_id, Integer video_id,String access_key) {	
+	public static String getVideos(Integer owner_id, Integer video_id,String access_key) {
 		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"video.get";
-		String urlParams = "access_token="+VK.USER_TOKEN
+		String urlParams = "access_token="+VK.GROUP_TOKEN
 		+"&v="+VK.API_VERSION
 		+"&videos="+owner_id+"_"+video_id+"_"+access_key;
 		String response = sendApiRequest(urlHost,urlParams);
-		//System.out.println(response);
+		System.out.println(response);
 		VKAPIResponse vkVideo;
 		if(!(JsonParser.isJson(response))) {
 			return null;
 		} else {
 			vkVideo=JsonParser.fromJson(response, VKAPIResponse.class);
-		}		
+		}
 		String videoUrls="";
 		Boolean first=true;
 		for(VKMessage item: vkVideo.getResponse().getItems()) {
@@ -178,7 +178,7 @@ public class VK {
 			videoUrls+=item.getPlayer();
 			first=false;
 		}
-		return videoUrls;	
+		return videoUrls;
 	}
 	private static String sendApiRequest(String urlHost, String urlParams) {
 		String response;
@@ -238,9 +238,6 @@ public class VK {
 		String response = sendApiRequest(urlHost,urlParams);
 		//System.out.println(response);
 		return JsonParser.fromJson(response, VKAPIResponse.class).getResponse().getItems();
-	}
-	public static void setUserToken(String userToken) {
-		USER_TOKEN=userToken;
 	}
 	public static void registerNames(String[] names) {
 		Mentions.registerNames(names);
@@ -856,6 +853,9 @@ public class VK {
 			return null;
 		return groups[0];
 	}
+	public static Group getCurrentGroup() {
+		return getGroupsById("")[0];
+	}
 	public static Group[] getGroupsById(Integer... groupID) {
 		String groupIDs = Stream.of(groupID)
 				.distinct()
@@ -867,8 +867,6 @@ public class VK {
 		return getGroupsById(groupIDs);
 	}
 	public static Group[] getGroupsById(String ids) {
-		if(ids==null||ids.length()<1) 
-			return null;
 		String urlHost = VK_SCHEME+VK_METHOD_DOMAIN+"groups.getById";
 		String urlParams = "access_token="+VK.GROUP_TOKEN
 				+"&v="+VK.API_VERSION

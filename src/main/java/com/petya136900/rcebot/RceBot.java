@@ -1,11 +1,8 @@
 package com.petya136900.rcebot;
 
-import java.io.UnsupportedEncodingException;
-
 import com.petya136900.rcebot.tools.*;
 import org.fusesource.jansi.AnsiConsole;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import com.petya136900.rcebot.lifecycle.Logger;
 import com.petya136900.rcebot.lifecycle.NotifyLoop;
 import com.petya136900.rcebot.handlers.DefaultHandler;
@@ -25,10 +22,10 @@ public class RceBot {
 			"club189353129",
 	};
 	
-	public static void main(String[] args) throws UnsupportedEncodingException {
+	public static void main(String[] args) {
 		Settings settings = ConsoleParser.parseArgs(args);
 		settings.addBotNames(myBotNames); // The names to which the bot reacts in chats
-		settings.setGroupToken("GROUP_TOKEN");
+		settings.setGroupToken(Properties.getProperty("GROUP_TOKEN")); // contained within bot.ini file(INI format, any section)
 		System.out.println(settings);
 		VK.setup(settings);
 		VK.setAdminID(550940196);

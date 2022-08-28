@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cf.furs</groupId>
 	<artifactId>RceBot</artifactId>
-	<version>4.0.7-RELEASE</version>
+	<version>4.0.9-RELEASE</version>
 	<name>RceBot</name>
 	<!--  -->
 	<parent>
@@ -79,6 +79,12 @@
 			<groupId>com.google.re2j</groupId>
 			<artifactId>re2j</artifactId>
 			<version>1.7</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.ini4j/ini4j -->
+		<dependency>
+			<groupId>org.ini4j</groupId>
+			<artifactId>ini4j</artifactId>
+			<version>0.5.4</version>
 		</dependency>
 	</dependencies>
 	<!--  -->

@@ -3,36 +3,39 @@ package com.petya136900.rcebot.tools;
 import java.util.Arrays;
 
 public class Settings {
-
     private Settings() {
 
     }
     public Settings(String groupToken) {
         setGroupToken(groupToken);
     }
-
     public static Settings getInternalInstance() {
         return new Settings();
     }
-
     @Override
     public String toString() {
-        return "GroupID: "+groupID+"\n"
-                +(useLongPoll?"Long-Poll":"Call-Back")+" mode\n"
+        int l = groupToken!=null?groupToken.length():0;
+        int replaced = 0;
+        if(l>1)
+            replaced=l/2;
+        return (useLongPoll?"Long-Poll":"Call-Back")+" mode\n"
+                +"GROUP_BOT_TOKEN: "+(groupToken!=null?(groupToken.replaceFirst(".{"+replaced+"}$",
+                stars(replaced))):null)+"\n"
                 + "TestMode: "+testMode+"\n"
                 + "Admin ID: "+adminID+"\n"
                 + "Names: "+ Arrays.toString(names)+"\n"
                 + "API-Version: "+apiVersion;
     }
+    private String stars(int m) {
+        return new String(new char[m]).replace("\0", "*");
+    }
     private String[] consoleArgs=new String[]{};
     private String groupToken="";
-    private String userToken="";
     private Integer callBackPort=80;
     private Boolean useLongPoll=true;
     private String confirmCode="bb3ef7c2";
     private Boolean testMode=false;
     private String[] names = new String[] {};
-    private Integer groupID=189353129;
     private Integer adminID=550940196;
     private String apiVersion= "5.130";
 
@@ -42,14 +45,6 @@ public class Settings {
 
     public void setGroupToken(String groupToken) {
         this.groupToken = groupToken;
-    }
-
-    public String getUserToken() {
-        return userToken;
-    }
-
-    public void setUserToken(String userToken) {
-        this.userToken = userToken;
     }
 
     public Boolean getUseLongPoll() {
@@ -82,12 +77,6 @@ public class Settings {
 
     public void setNames(String[] names) {
         this.names = names;
-    }
-    public Integer getGroupID() {
-        return groupID;
-    }
-    public void setGroupID(Integer groupID) {
-        this.groupID = groupID;
     }
     public Integer getAdminID() {
         return adminID;
