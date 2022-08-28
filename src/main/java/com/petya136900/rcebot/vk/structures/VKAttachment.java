@@ -49,12 +49,6 @@ public class VKAttachment {
 		private Integer owner_id;
 		private String access_key;
 		public String getPlayer() {
-			String player = VK.getVideos(owner_id,id,access_key);
-			if(player!=null) {
-				if(player.trim().length()>0) {
-					return "DirectURI: "+player;
-				}
-			}
 			return "https://vk.com/video?z=video"+this.owner_id+"_"+this.id+"_"+access_key;
 		}
 		public Integer getOwner_id() {
