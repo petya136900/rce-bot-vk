@@ -6,24 +6,28 @@ import org.ini4j.Profile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 public class Properties {
-    private final static String DEFAULT_BOT_PROPERTIES_FILE = "bot.ini";
-    final static Set<Ini> iniList = new HashSet<>();
+    private final static String[] DEFAULT_BOT_PROPERTIES_FILES = new String[]{"bot.ini","config/bot.ini"};
+    final static ArrayList<Ini> iniList = new ArrayList<>();
     static {
-        try {
-            iniList.add(new Ini(new File(checkParentFoldersFor(DEFAULT_BOT_PROPERTIES_FILE,2))));
-        } catch (Exception ignored) {}
+        for(String pathToFile : DEFAULT_BOT_PROPERTIES_FILES) {
+            System.out.println("Check for: "+pathToFile);
+            try {
+                addAdditionalProperties(new File(checkParentFoldersFor(pathToFile,2)));
+            } catch (Exception ignored) {}
+        }
     }
 
     private static String checkParentFoldersFor(String file, int level) throws FileNotFoundException {
         File tFile = new File(RegexpTools.rString("../",level)+file);
-        if(tFile.exists())
+        if(tFile.exists()) {
             return tFile.toString();
-            if(level>0)
-                return checkParentFoldersFor(file,level-1);
+        }
+        if(level>0) {
+            return checkParentFoldersFor(file,level-1);
+        }
         throw new FileNotFoundException();
     }
 
@@ -73,9 +77,5 @@ public class Properties {
         if(value!=null)
             return value;
         return defaultValue;
-    }
-    public static String getProperty(String property, String defaultValue) {
-        String rProperty = getProperty(property);
-        return rProperty!=null?rProperty:defaultValue;
     }
 }
