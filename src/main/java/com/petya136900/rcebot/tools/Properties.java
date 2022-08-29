@@ -13,7 +13,6 @@ public class Properties {
     final static ArrayList<Ini> iniList = new ArrayList<>();
     static {
         for(String pathToFile : DEFAULT_BOT_PROPERTIES_FILES) {
-            System.out.println("Check for: "+pathToFile);
             try {
                 addAdditionalProperties(new File(checkParentFoldersFor(pathToFile,2)));
             } catch (Exception ignored) {}

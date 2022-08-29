@@ -29,19 +29,20 @@ import com.petya136900.rcebot.rce.timetable.TimetableClient;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
 import com.petya136900.rcebot.rce.timetable.TimetableException.ExceptionCode;
 import com.petya136900.rcebot.tools.JsonParser;
+import com.petya136900.rcebot.tools.Properties;
 import com.petya136900.rcebot.tools.RegexpTools;
 import com.petya136900.rcebot.tools.Foo;
 import com.petya136900.rcebot.vk.VK;
 
 public class MySqlConnector {
-	private static final String     DB_URI       = "localhost";
-	private static final Integer    DB_PORT      = 3306;
-	private static final String     DB_USERNAME  = "root";
-	private static final String     DB_PASSWORD  = "136900";
-	private static final String     DB_NAME      = "rce_bot";
-	private static final String     ENCODING     = "UTF-8";
-	private static final String     TIMEZONE     = "Europe/Moscow";
-	private static final String     DB_ENGINE    = "InnoDB";
+	private static final String     DB_URI       = Properties.getProperty("DB_URI", "localhost");
+	private static final Integer    DB_PORT      = Properties.getProperty("DB_PORT", 3306);
+	private static final String     DB_USERNAME  = Properties.getProperty("DB_USERNAME","root");
+	private static final String     DB_PASSWORD  = Properties.getProperty("DB_PASSWORD", "136900");
+	private static final String     DB_NAME      = Properties.getProperty("DB_NAME", "rce_bot");
+	private static final String     ENCODING     = Properties.getProperty("DB_ENCODING", "UTF-8");
+	private static final String     TIMEZONE     = Properties.getProperty("DB_TIMEZONE", "Europe/Moscow");
+	private static final String     DB_ENGINE    = Properties.getProperty("DB_ENGINE", "InnoDB");
 	private static       Connection conn;
 	private static       Boolean    dbExist      = false;
 	//private static       Integer openStatementsCounter = 0;
