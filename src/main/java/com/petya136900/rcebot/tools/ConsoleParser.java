@@ -124,13 +124,13 @@ public class ConsoleParser {
             File configFile = new File(consoleSettings.getPathToConfigFile());
             try {
                 Properties.addAdditionalProperties(configFile);
-                if(consoleSettings.getGroupToken()==null)
-                    consoleSettings.setGroupToken(Properties.getProperty("GROUP_TOKEN"));
             } catch (Exception e) {
                 throw new IllegalArgumentException(String.format("Error[%s]: Doesn't exist or bad configuration file[%s]",
                         e.getLocalizedMessage(),consoleSettings.getPathToConfigFile()));
             }
         }
+        if(consoleSettings.getGroupToken()==null)
+            consoleSettings.setGroupToken(Properties.getProperty("GROUP_TOKEN"));
         return consoleSettings;
     }
     private static Ansi s(String argName, String[] altNames, Boolean hasValue,Boolean isArrayValues, String desc) {
