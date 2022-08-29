@@ -2,7 +2,9 @@ package com.petya136900.rcebot.tools;
 
 import org.ini4j.Ini;
 import org.ini4j.Profile;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,9 +14,19 @@ public class Properties {
     final static Set<Ini> iniList = new HashSet<>();
     static {
         try {
-            iniList.add(new Ini(new File(DEFAULT_BOT_PROPERTIES_FILE)));
+            iniList.add(new Ini(new File(checkParentFoldersFor(DEFAULT_BOT_PROPERTIES_FILE,2))));
         } catch (Exception ignored) {}
     }
+
+    private static String checkParentFoldersFor(String file, int level) throws FileNotFoundException {
+        File tFile = new File(RegexpTools.rString("../",level)+file);
+        if(tFile.exists())
+            return tFile.toString();
+            if(level>0)
+                return checkParentFoldersFor(file,level-1);
+        throw new FileNotFoundException();
+    }
+
     public static Ini addAdditionalProperties(File propertiesFile) throws IOException {
         Ini ini = new Ini(propertiesFile);
         return addAdditionalProperties(ini);
@@ -35,10 +47,18 @@ public class Properties {
         for(Ini ini : iniList) {
             for(Map.Entry<String, Profile.Section> entry : ini.entrySet()) {
                 String value = entry.getValue().get(property);
-                if(value!=null) return value;
+                if(value!=null) return RegexpTools.replaceRegexp(value,";+.*$","",true).trim();
             }
         }
         return null;
+    }
+    public static <T> T getProperty(String property, T defaultValue) {
+        String value = getProperty(property);
+        try {
+            T tValue = (T) getProperty(property);
+            if(tValue!=null) return tValue;
+        } catch (Exception ignore) {}
+        return defaultValue;
     }
     public static String getProperty(String property, String defaultValue) {
         String rProperty = getProperty(property);

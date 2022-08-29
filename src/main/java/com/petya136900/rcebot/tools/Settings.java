@@ -3,9 +3,7 @@ package com.petya136900.rcebot.tools;
 import java.util.Arrays;
 
 public class Settings {
-    private Settings() {
-
-    }
+    private Settings() {}
     public Settings(String groupToken) {
         setGroupToken(groupToken);
     }
@@ -20,14 +18,11 @@ public class Settings {
             replaced=l/2;
         return (useLongPoll?"Long-Poll":"Call-Back")+" mode\n"
                 +"GROUP_BOT_TOKEN: "+(groupToken!=null?(groupToken.replaceFirst(".{"+replaced+"}$",
-                stars(replaced))):null)+"\n"
+                RegexpTools.rString("*",replaced))):null)+"\n"
                 + "TestMode: "+testMode+"\n"
                 + "Admin ID: "+adminID+"\n"
                 + "Names: "+ Arrays.toString(names)+"\n"
                 + "API-Version: "+apiVersion;
-    }
-    private String stars(int m) {
-        return new String(new char[m]).replace("\0", "*");
     }
     private String[] consoleArgs=new String[]{};
     private String groupToken;

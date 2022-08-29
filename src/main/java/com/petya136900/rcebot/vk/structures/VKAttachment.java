@@ -1,7 +1,4 @@
 package com.petya136900.rcebot.vk.structures;
-
-import com.petya136900.rcebot.vk.VK;
-
 public class VKAttachment {
 	private String type;
 	private Photo photo;

@@ -47,7 +47,7 @@ public class Mentions {
 	}
 	private static boolean checkLocalRegexp(String regexp,String oldMessage,VKJson vkJson) {
 		if(RegexpTools.checkRegexp(regexp,oldMessage)) {
-			vkJson.setText(RegexpTools.removeFirstString(vkJson.getText().toLowerCase(), regexp)); // Remove mention
+			vkJson.setText(RegexpTools.removeFirstString(vkJson.getText(), regexp)); // Remove mention
 			return true;
 		} else {
 			return false;

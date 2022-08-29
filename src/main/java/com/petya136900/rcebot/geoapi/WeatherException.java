@@ -22,7 +22,7 @@ public class WeatherException extends Exception {
 			put(ExceptionCode.ACC_DISABLED,
 				"Аккаунт отключен");
 			put(ExceptionCode.UNKWN_ERROR, 
-				"Неизвестная ошибка");			
+				"Неизвестная ошибка: %s");
 	}};	
 	private String message;
 	public WeatherException(ExceptionCode code, String ...  additionValues) {

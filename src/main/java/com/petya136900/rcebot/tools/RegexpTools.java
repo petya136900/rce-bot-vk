@@ -40,5 +40,10 @@ public class RegexpTools {
 		} else {
 			return -1;
 		}
-	}		
+	}
+	public static String rString(String s, int times) {
+		if(times<1)
+			return "";
+		return new String(new char[times]).replace("\0", s);
+	}
 }

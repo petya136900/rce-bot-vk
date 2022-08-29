@@ -15,7 +15,7 @@ public class PayloadTextHandler implements HandlerInterface {
 			Payload payload = JsonParser.fromJson(vkContent.getVK().getPayload(),Payload.class);
 			vkContent.getVK().setText((payload.getData()==null?"":payload.getData()));
 			vkContent.getVK().setPayload(null);
-			new Mentions().isMention(vkContent.getVK());
+			Mentions.isMention(vkContent.getVK());
 			if((!MainHandler.getTestMode())|MainHandler.checkTestMode(vkContent.getVK().getFrom_id(),true,vkContent.getVK().getPeer_id())) {
 				MainHandler.findHandler(vkContent,false);
 			}
