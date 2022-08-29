@@ -47,7 +47,8 @@ public class Properties {
         for(Ini ini : iniList) {
             for(Map.Entry<String, Profile.Section> entry : ini.entrySet()) {
                 String value = entry.getValue().get(property);
-                if(value!=null) return RegexpTools.replaceRegexp(value,";+.*$","",true).trim();
+                if(value!=null) // return RegexpTools.replaceRegexp(value,";+.*$","",true).trim();
+                     return value.trim();
             }
         }
         return null;
