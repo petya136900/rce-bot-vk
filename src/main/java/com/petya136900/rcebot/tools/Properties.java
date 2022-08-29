@@ -53,11 +53,24 @@ public class Properties {
         return null;
     }
     public static <T> T getProperty(String property, T defaultValue) {
-        String value = getProperty(property);
+        Class clazz = defaultValue.getClass();
+        String propValue = getProperty(property);
+        T value=null;
+        if(propValue==null)
+            return defaultValue;
         try {
-            T tValue = (T) getProperty(property);
-            if(tValue!=null) return tValue;
+            if (clazz.isAssignableFrom(String.class)) {
+                value = (T) propValue;
+            } else if (clazz.isAssignableFrom(Integer.class)) {
+                value = (T) Integer.valueOf(propValue);
+            } else if (clazz.isAssignableFrom(Boolean.class)) {
+                value = (T) Boolean.valueOf(propValue);
+            } else if (clazz.isAssignableFrom(Double.class)) {
+                value = (T) Double.valueOf(propValue);
+            }
         } catch (Exception ignore) {}
+        if(value!=null)
+            return value;
         return defaultValue;
     }
     public static String getProperty(String property, String defaultValue) {
