@@ -4,13 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.petya136900.rcebot.geoapi.*;
 import com.petya136900.rcebot.lifecycle.HandlerInterface;
-import com.petya136900.rcebot.geoapi.GeoAPI;
-import com.petya136900.rcebot.geoapi.GeoJson;
-import com.petya136900.rcebot.geoapi.GeoSatelliteLite;
-import com.petya136900.rcebot.geoapi.GeoPhotoUploadThread;
 import com.petya136900.rcebot.geoapi.GeoAPI.GeoData;
 import com.petya136900.rcebot.other.Tokens;
+import com.petya136900.rcebot.tools.JsonParser;
 import com.petya136900.rcebot.vk.VK;
 import com.petya136900.rcebot.vk.structures.MessageSendResponse.MessageInfo;
 import com.petya136900.rcebot.vk.structures.VKAttachment.Photo;
@@ -42,9 +40,8 @@ public class GeoHandler implements HandlerInterface {
 			scale = DEFAULT_SCALE;
 		}
 		geoJson.getGeo_json().getGeometry().setCoordinates(geo.get5points(0.015f*scale));
-		GeoData geoData = geoApi.createPolygon(geoJson);
-		mess.editMessage("Полигон создан, поиск снимков..");
-		try {
+		try(GeoData geoData = geoApi.createPolygon(geoJson)) {
+			mess.editMessage("Полигон создан, поиск снимков..");
 			if(!geoDir.exists()) {
 				geoDir.mkdirs();
 			}
@@ -76,9 +73,14 @@ public class GeoHandler implements HandlerInterface {
 			mess.deleteMessage();
 			vkContent.sendCreatedImages(alp.toArray(new Photo[] {}));
 		} catch (Exception e) {
-			mess.editMessage("Не удалось получить снимки: "+e.getLocalizedMessage());
-		} finally {
-			geoApi.deletePolygon(geoData.getId());
+			e.printStackTrace();
+			if(e instanceof GeoException) {
+				GeoException geoEx = (GeoException) e;
+				mess.editMessage(
+						String.format("Во время выполнения API запроса произошла ошибка: %s",
+								geoEx.getMessage()));
+			} else
+				mess.editMessage("Ошибка выполнения: "+e.getLocalizedMessage());
 		}
 	} 
 }

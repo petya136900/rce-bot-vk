@@ -1,6 +1,7 @@
 package com.petya136900.rcebot.geoapi;
 
 import com.petya136900.rcebot.other.Tokens;
+import com.petya136900.rcebot.tools.JsonParser;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,6 +12,7 @@ import com.petya136900.rcebot.geoapi.GeoAPI.GeoData;
 public class SatelliteController {
 	private static final String GEO_APIKEY = Tokens.AGROMONITORING_API_KEY;
 	float lat,lon;
+	private GeoSatelliteLite[] satellites;
 	private static String lastID=null;
 	@RequestMapping(value = "/satellite", method = RequestMethod.GET)
 	synchronized public String satelliteController(@RequestParam(value = "lat", required = true, defaultValue = "54.628304") String latS, 
@@ -18,12 +20,18 @@ public class SatelliteController {
 		GeoAPI geoApi = new GeoAPI(GEO_APIKEY);
 		lat = Float.parseFloat(latS);
 		lon = Float.parseFloat(lonS);
-		if(lastID!=null) {
-			geoApi.deletePolygon(lastID);	
+		try {
+			if (lastID != null) {
+				geoApi.deletePolygon(lastID);
+			}
+			GeoJson geoJ = new GeoJson(lat, lon, 0.02f);
+			try (GeoData geoData = geoApi.createPolygon(geoJ)) {
+				lastID=geoData.getId();
+				GeoSatelliteLite[] satellites = geoApi.getSatellite(geoData.getId());
+			}
+		}catch (Exception geoEx) {
+			return JsonParser.toJson(geoEx);
 		}
-		GeoJson geoJ = new GeoJson(lat,lon,0.02f); 	
-		GeoData geoData = geoApi.createPolygon(geoJ);
-		GeoSatelliteLite[] satellites = geoApi.getSatellite(geoData.getId());
 		String pictures="";
 		
 		for(GeoSatelliteLite satellite : satellites) {
@@ -35,7 +43,6 @@ public class SatelliteController {
 					  "Изображение: "+satellite.getImage().getTruecolor()+"</br>"+
 					  "Tile: "+satellite.getTile().getTruecolor()+"</br>";
 		}
-		lastID=geoData.getId();
 		return "Hello!"+"</br>"
 				+ "lat: "+lat+"</br>"
 				+ "lon: "+lon+"</br>"

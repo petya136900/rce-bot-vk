@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import com.google.gson.JsonNull;
 import com.petya136900.rcebot.geoapi.GeoJson.Geo_Json;
 import com.petya136900.rcebot.tools.JsonParser;
 
@@ -21,7 +22,7 @@ public class GeoAPI {
 	public GeoAPI(String appID) {
 		this.appID=appID;
 	}
-	public class GeoData {
+	public class GeoData implements AutoCloseable {
 		private String id;
 		private Geo_Json geo_json;
 		private String name;
@@ -63,16 +64,27 @@ public class GeoAPI {
 		}
 		public void setId(String id) {
 			this.id = id;
-		}		
+		}
+
+		@Override
+		public void close() {
+			try { deletePolygon(getId()); } catch (Exception ignored) {}
+		}
+		private GeoAPI geoAPI;
+		public void setInternalApi(GeoAPI geoAPI) {
+			this.geoAPI = geoAPI;
+		}
 	}
-	public GeoData createPolygon(GeoJson geoJson) {
+	public GeoData createPolygon(GeoJson geoJson) throws GeoException {
 		String urlHost = API_SCHEME+POLYGONS_API_HOST+"?appid="+appID;
 		String urlParams = JsonParser.toJson(geoJson);
 		//System.out.println(urlHost+"?"+urlParams);
 		String response = sendApiRequest(urlHost,urlParams);
-		return JsonParser.fromJson(response, GeoData.class);		
+		GeoData geoData = JsonParser.fromJson(response, GeoData.class);
+		geoData.setInternalApi(this);
+		return geoData;
 	}
-	private static String sendApiRequest(String urlHost, String urlParams,String... method) {
+	private static String sendApiRequest(String urlHost, String urlParams,String... method) throws GeoException {
 		String response = null;
 		HttpURLConnection conn=null;
 		if(urlParams==null) {
@@ -96,25 +108,32 @@ public class GeoAPI {
 			 InputStream resultContentIS = conn.getInputStream();
 	         BufferedReader reader = new BufferedReader(new InputStreamReader(resultContentIS));
 	         response = reader.readLine();
+			 checkError(response);
 		} catch (IOException e) {
-	         //System.err.println("Can't perform API request: "+urlHost+"?"+urlParams);
-	         //e.printStackTrace();			
 	         BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
 	         try {
 				response = reader.readLine();
+				checkError(response);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}
 		return response;
 	}
-	public String deletePolygon(String id) {
+
+	private static void checkError(String response) throws GeoException {
+		if(response.toLowerCase().contains("error")) {
+			throw new GeoException(response);
+		}
+	}
+
+	public String deletePolygon(String id) throws GeoException {
 		String urlHost = API_SCHEME+POLYGONS_API_HOST+"/"+id+"?appid="+appID;
 		//System.out.println(urlHost+"?"+urlParams);
 		String response = sendApiRequest(urlHost,null,"DELETE");
 		return response;
 	}
-	public GeoSatelliteLite[] getSatellite(String id) {
+	public GeoSatelliteLite[] getSatellite(String id) throws GeoException {
 		long curTimeUnix=System.currentTimeMillis()/1000;
 		String urlHost = API_SCHEME+IMAGESEARCH_API_HOST+
 			"?start="+(curTimeUnix-(30*24*60*60))
