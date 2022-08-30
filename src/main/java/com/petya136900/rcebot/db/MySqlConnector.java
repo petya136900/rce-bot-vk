@@ -35,6 +35,24 @@ import com.petya136900.rcebot.tools.Foo;
 import com.petya136900.rcebot.vk.VK;
 
 public class MySqlConnector {
+	public static String toStringStatic() {
+		try { connectToDB(); } catch (Exception ignored) {}
+		StringBuilder sb = new StringBuilder()
+				.append("DB_URI: " + DB_URI + "\n")
+				.append("DB_PORT: " + DB_PORT + "\n")
+				.append("DB_USERNAME: " + DB_USERNAME + "\n")
+				.append("DB_PASSWORD: " + DB_PASSWORD + "\n")
+				.append("DB_NAME: " + DB_NAME + "\n")
+				.append("ENCODING: " + ENCODING + "\n")
+				.append("TIMEZONE: " + TIMEZONE + "\n")
+				.append("DB_ENGINE: " + DB_ENGINE + "\n");
+		sb.append("\nConnection opened: ");
+		try { sb.append(conn.isClosed()); } catch (Exception e) {
+			sb.append("Error: "+e.getLocalizedMessage());
+		}
+		sb.append("\nDB Exist: "+dbExist);
+		return sb.toString();
+	}
 	private static final String     DB_URI       = Properties.getProperty("DB_URI", "localhost");
 	private static final Integer    DB_PORT      = Properties.getProperty("DB_PORT", 3306);
 	private static final String     DB_USERNAME  = Properties.getProperty("DB_USERNAME","root");
@@ -49,7 +67,6 @@ public class MySqlConnector {
 	//private static       Integer openStatementsLimit   = 250;
 	private static       Boolean reconnectPending = false;
 	private static final Semaphore  locker       = new Semaphore(1);
-	
 	public  static void      hello(String string,Integer delay)                    throws TimetableException {
 		checkMySqlServer();
 		try {

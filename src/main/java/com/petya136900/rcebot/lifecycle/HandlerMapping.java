@@ -61,11 +61,12 @@ public class HandlerMapping {
 		addHandler("^(главное меню)",new FixMainMenuHandler());
 		addHandler("(^|^( ))+(пар|расписани|замен)+([а-я]{1})+($|( ))+",new TimetableHandler()); // \s
 		addHandler("^(test|тест)$",new TestHandler());
+		addHandler("^(db+.?status)",new DbStatusHandler());
 		addHandler("((транс|trans)+(([^a-zа-я])*)?)$",new TransHandler());
 		addHandler("((debug)+(([^a-zа-я])*)?)$",new DebugHandler());
 		addHandler("^(furry|фурри|anime|аниме)",new FurryHandler());
 		addHandler("(^settings)",new BotSettingsHandler());
-		addHandler("(^stop|стоп)$",new StopHandler());
+		addHandler("(^stop|стоп)",new StopHandler());
 		addHandler("(^(погода|weather))",new WeatherHandler());
 		addHandler("(^(hostname))",new HostNameHandler());
 		addHandler("^(time)",x-> x.reply(   new Date(System.currentTimeMillis()).toString()   ));

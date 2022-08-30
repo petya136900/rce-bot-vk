@@ -10,13 +10,14 @@ public class HostNameHandler implements HandlerInterface {
 
 	@Override
 	public void handle(VK vkContent) {
+		vkContent.reply(getUserHostname()+((VK.getTestMode())?" | Test Mode":""));
+	}
+	public static String getUserHostname() {
 		String hostName="UnknownHostName";
 		try {
 			hostName=InetAddress.getLocalHost().getHostName();
-		} catch(UnknownHostException une) {
-			//
-		}
-		vkContent.reply(System.getProperty("user.name")+"@"+hostName+((VK.getTestMode())?" | Test Mode":""));
+		} catch(UnknownHostException ignored) {}
+		return System.getProperty("user.name")+"@"+hostName;
 	}
 
 }

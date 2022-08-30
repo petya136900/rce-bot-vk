@@ -53,10 +53,14 @@ public class VK {
 		VK.setup(settings.getGroupToken(), // GROUP TOKEN (message permission)
 				settings.getApiVersion());
 		settings.addBotName("club"+GROUP_ID);
-		VK.registerNames(settings.getNames());
-		VK.setAdminID(settings.getAdminID());
-		VK.setTestMode(getTestMode(),true);
-		VK.setCallbackConfirmationCode(settings.getConfirmCode());
+		if((settings.getNames()!=null)&&settings.getNames().length>0)
+			VK.registerNames(settings.getNames());
+		if(settings.getAdminID()!=null)
+			VK.setAdminID(settings.getAdminID());
+		if(settings.getTestMode()!=null)
+			VK.setTestMode(getTestMode(),true);
+		if(settings.getConfirmCode()!=null)
+			VK.setCallbackConfirmationCode(settings.getConfirmCode());
 		if(!settings.getUseLongPoll()) {
 			VK.startCallback(settings.getCallBackPort(),settings.getConsoleArgs()); // If use CallBack
 		} else {

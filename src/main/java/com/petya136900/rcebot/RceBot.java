@@ -27,8 +27,8 @@ public class RceBot {
 		settings.addBotNames(myBotNames); // The names to which the bot reacts in chats
 		// GROUP_TOKEN contained within bot.ini file(INI format, any section)
 		System.out.println(settings);
-		VK.setup(settings);
 		VK.setAdminID(550940196);
+		VK.setup(settings);
 		VK.addHandler("Hello!$",vkContent ->
 				VK.sendMessage(vkContent.getVK().getPeer_id(), "World!")
 		);
