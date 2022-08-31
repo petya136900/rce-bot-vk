@@ -177,13 +177,13 @@ public class CreateKeyboardHandler implements HandlerInterface {
 		).setOne_time(false);	
 	@Override
 	public void handle(VK vkContent) {
-		String text = (RegexpTools.replaceRegexp(vkContent.getVK().getText().trim(), "^(genkey|клав)+(.)*?(\\b)", "", false));
+		String text = (RegexpTools.replaceRegexp(vkContent.getVK().getText().trim(), "^(genkey|клав|keyboard)+(.)*?($| )", "", false));
 		//System.out.println(text);
 		if((text.trim().equalsIgnoreCase("delete"))|
 			(text.trim().equalsIgnoreCase("удалить"))|
 			  (text.trim().equalsIgnoreCase("отключить"))|
 			  (text.trim().equalsIgnoreCase("выключить"))) {
-			vkContent.reply("Keyboard deleted c:",null,new Keyboard().setOne_time(false));
+			vkContent.reply("Keyboard deleted c:",null,Keyboard.clear());
 			try {
 				MySqlConnector.putKeyboardReplaced(vkContent.getVK().getPeer_id(),1);
 			} catch (TimetableException e) {

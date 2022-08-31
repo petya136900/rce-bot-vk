@@ -121,7 +121,9 @@ public class VKJson {
 		this.object.getMessage().setPeer_id(peer_id);
 	}
 	public String getText() {
-		return this.object.getMessage().getText();
+		if(this.object.getMessage()!=null)
+			return this.object.getMessage().getText();
+		return null;
 	}
 	public void setText(String text) {
 		this.object.getMessage().setText(text);

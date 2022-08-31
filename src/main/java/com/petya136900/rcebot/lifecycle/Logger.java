@@ -2,6 +2,7 @@ package com.petya136900.rcebot.lifecycle;
 
 import com.petya136900.rcebot.db.MySqlConnector;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
+import com.petya136900.rcebot.tools.JsonParser;
 import com.petya136900.rcebot.vk.VK;
 import com.petya136900.rcebot.vk.structures.*;
 import org.fusesource.jansi.AnsiConsole;
@@ -90,9 +91,10 @@ public class Logger extends Thread {
 		if(groupName==null) {
 			groupName="$UNKWN";
 		}
-		Conversations conversations = VK.getConversationByid(vk.getVK().getPeer_id());
+		Conversations conversations = VK.getConversationByid(peer_id);
 		System.out.println(ansi()
-				.fgBrightBlue().a(convertDate(curTime)).fg(DEFAULT)
+				.fgBrightYellow().a(vk.isInternalMention()?convertDate(curTime):"")
+				.fgBrightBlue().a(!vk.isInternalMention()?convertDate(curTime):"").fg(DEFAULT)
 				.a(" |")
 				.fgBrightYellow().a("Message Event")
 				.a(" |")
@@ -153,7 +155,8 @@ public class Logger extends Thread {
 			senderName = (user==null)?"[API ERROR]":(user.getFirst_name()+" "+user.getLast_name());
 		}
 		System.out.println(ansi()
-				.fgBrightBlue().a(convertDate(message.getDate())).fg(DEFAULT)
+				.fgBrightYellow().a(vk.isInternalMention()?convertDate(message.getDate()):"")
+				.fgBrightBlue().a(!vk.isInternalMention()?convertDate(message.getDate()):"").fg(DEFAULT)
 				.a(" |")
 				.fgBrightBlue().a("Peer: ").fg(DEFAULT)
 				.fg(CYAN).a(message.getPeer_id()).fg(DEFAULT)

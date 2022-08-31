@@ -31,7 +31,11 @@ public class Button {
 	public <T> T getPayload(Class<T> class1) {
 		return JsonParser.fromJson(this.getAction().getPayload(), class1);
 	}
-	public Button setPayload(Object payload) {
+	public Button setPayload(Payload payload) {
+		action.setPayload(JsonParser.toJson(payload));
+		return this;
+	}
+	public Button setObjectPayload(Object payload) {
 		action.setPayload(JsonParser.toJson(payload));
 		return this;
 	}
@@ -91,6 +95,29 @@ public class Button {
 		this.action = action;
 	}
 
+	public Button setHandler(String handler) {
+		Payload cPayload = getPayload(Payload.class);
+		if(cPayload==null)
+			cPayload = new Payload(handler);
+		else
+			cPayload.setHandler(handler);
+		setPayload(cPayload);
+		return this;
+	}
+	public Button setStage(String stage) {
+		Payload cPayload = getPayload(Payload.class);
+		if(cPayload==null)
+			cPayload = new Payload(null,stage);
+		else
+			cPayload.setStage(stage);
+		setPayload(cPayload);
+		return this;
+	}
+
+	public Button setPayload(String handler, String stage) {
+		setPayload(new Payload(handler,stage));
+		return this;
+	}
 	public enum Type {
 		@SerializedName("text")
 		TEXT("text"),
@@ -152,7 +179,7 @@ public class Button {
 	/**
 	 * @return Not serialized Payload value
 	 */
-	public String payload(boolean donotmatter) {
+	public String payload() {
 		return action.getPayload();
 	}
 }

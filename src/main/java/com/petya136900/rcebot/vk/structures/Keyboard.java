@@ -3,7 +3,7 @@ package com.petya136900.rcebot.vk.structures;
 import java.util.ArrayList;
 
 public class Keyboard {
-	private boolean one_time=true;
+    private boolean one_time=true;
 	transient private ArrayList<KeyboardLine> lines=new ArrayList<KeyboardLine>();
 	private Button[][] buttons;
 	private boolean inline=false;;
@@ -25,6 +25,11 @@ public class Keyboard {
 			}
 		}
 	}
+
+	public static Keyboard clear() {
+		return new Keyboard().setOne_time(false);
+	}
+
 	public Keyboard addKeyboardLine(KeyboardLine line) {
 		if(line!=null) {
 			this.lines.add(line);

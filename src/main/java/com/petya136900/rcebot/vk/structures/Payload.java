@@ -10,7 +10,6 @@ public class Payload {
 	private String command;
 	private String button_type;
 	private String payload;
-	
 	public boolean isUnsupportedCallback() {
 		if(command!=null) {
 			if(button_type!=null) {
@@ -33,7 +32,9 @@ public class Payload {
 		this.handler=handler;
 		this.stage=stage;
 	}
-	
+	public Payload(String handler) {
+		this.handler=handler;
+	}
 	public Payload() {
 		// TODO Auto-generated constructor stub
 	}

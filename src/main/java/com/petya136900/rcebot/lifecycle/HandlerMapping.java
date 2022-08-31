@@ -23,7 +23,6 @@ import com.petya136900.rcebot.handlers.GeoHandler;
 import com.petya136900.rcebot.handlers.HCHandler;
 import com.petya136900.rcebot.handlers.HostNameHandler;
 import com.petya136900.rcebot.handlers.InfoAboutClientHandler;
-import com.petya136900.rcebot.handlers.MangaHandler;
 import com.petya136900.rcebot.handlers.MultiHandler;
 import com.petya136900.rcebot.handlers.NothingHandler;
 import com.petya136900.rcebot.handlers.NotifyHandler;
@@ -54,7 +53,7 @@ public class HandlerMapping {
 	private static final LinkedHashMap<Pattern, HandlerInterface> callbackPayloadHandlers = new LinkedHashMap<>();
 	public static void   registerBasicHandlers() {
 		addHandler("^(#|!)",new NothingHandler());
-		addHandler("^(genkey|клав|keyboard)+(.)*?(\\b)", new CreateKeyboardHandler());
+		addHandler("^(genkey|клав|keyboard)+(.)*?($| )", new CreateKeyboardHandler());
 		addHandler("(multi)",new MultiHandler());
 		addHandler("((вкл)+(.)+?ув.д.)",new NotifyHandlerHelp());
 		addHandler("((выкл|откл)+(.)+?ув.д.)",new NotifyHandlerHelp2());	
@@ -62,6 +61,7 @@ public class HandlerMapping {
 		addHandler("(^|^( ))+(пар|расписани|замен)+([а-я]{1})+($|( ))+",new TimetableHandler()); // \s
 		addHandler("^(test|тест)$",new TestHandler());
 		addHandler("^(db+.?status)",new DbStatusHandler());
+		addHandler("^(hchan)",new HChanHandler());
 		addHandler("((транс|trans)+(([^a-zа-я])*)?)$",new TransHandler());
 		addHandler("((debug)+(([^a-zа-я])*)?)$",new DebugHandler());
 		addHandler("^(furry|фурри|anime|аниме)",new FurryHandler());
@@ -76,7 +76,6 @@ public class HandlerMapping {
 		addHandler("^(help|помощь|команды|справка)",new FaqHandler());
 		addHandler("(^(звонк))", new CallsHandler());
 		addHandler("^(вход)$", new EnterHandler());
-		addHandler("^(хачик|хачан|манга)", new MangaHandler());
 		addHandler("^(каб|кабинет|палат)", new CabinetHandler());
 		addHandler("^(препод|tdh47)", new TeacherHandler());
 		addHandler("^(say|скажи)",new SayHandler());
@@ -163,7 +162,7 @@ public class HandlerMapping {
 		//
 		// anonymous class
 		addHandler("testAnonym", new HandlerInterface() {			
-			String oldMessage; // !			
+			String oldMessage; // !	notice it
 			@Override public void handle(VK vkContent) {
 				try {switch(vkContent.getVK().getStage()) {
 					case("1"): 
@@ -205,7 +204,8 @@ public class HandlerMapping {
 				default: vkContent.reply("{L}Unknown stage"); break;
 			}} catch (Exception e) { vkContent.reply("{L}Stage is null"); }
 		});
-		//////////////////////		
+		//////////////////////
+		addPayloadHandler("^(hchan)",new HChanHandler());
 		addPayloadHandler("^text",new PayloadTextHandler());
 		addPayloadHandler("^test_payload_handler",new InfoAboutClientHandler());
 		addPayloadHandler("^pairs",new TimetableHandler());
@@ -215,6 +215,7 @@ public class HandlerMapping {
 		addPayloadHandler("^cab_on_day",new CabOnDayHandler());
 		addPayloadHandler("^say",new SayHandler());
 		//
+		addCallbackPayloadHandler("^(hchan)",new HChanHandler());
 		addCallbackPayloadHandler("^callback1", new CallBack1Handler());
 	}	
 	public static void   addHandler(String regex, HandlerInterface handler) {

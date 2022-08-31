@@ -15,7 +15,10 @@ public class Mentions {
 	public static String getNames() {
 		return names;
 	}
-	public static Boolean isMention(VKJson vkJson) {
+	public static boolean isMention(VKJson vkJson) {
+		if(vkJson.getMessage()==null) {
+			return vkJson.getObject().getUser_id().equals(vkJson.getObject().getPeer_id());
+		}
 		String oldMessage = vkJson.getText();
 		if(oldMessage==null) {
 			oldMessage="";
@@ -36,14 +39,15 @@ public class Mentions {
 			if(oldMessage.length()>100) {
 				oldMessage=oldMessage.substring(0,99);
 			}
-			String mentionRegexp = "^("+names+")+([., ])*([^a-zа-я0-9])";
+			String mentionRegexp = "^("+names+")+([., ])*([^a-zа-я0-9]|$)";
 			String bracketMentionRegexp="^\\[("+names+")\\|+.*]+([ ,])*($| |)";
 			if(checkLocalRegexp(bracketMentionRegexp,oldMessage,vkJson)) {
 				return true;
-			} else return checkLocalRegexp(mentionRegexp, oldMessage, vkJson);
-		} else {
-			return false;
+			} else if(checkLocalRegexp(mentionRegexp, oldMessage, vkJson)) {
+				return true;
+			}
 		}
+		return vkJson.getMessage().getFrom_id().equals(vkJson.getMessage().getPeer_id());
 	}
 	private static boolean checkLocalRegexp(String regexp,String oldMessage,VKJson vkJson) {
 		if(RegexpTools.checkRegexp(regexp,oldMessage)) {

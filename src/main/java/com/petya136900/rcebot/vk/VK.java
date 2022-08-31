@@ -48,7 +48,12 @@ public class VK {
 	private static final Integer SPAM_DELAY_MS=300;
 	private static final String VK_SCHEME = "https://";
 	private static final String VK_METHOD_DOMAIN = "api.vk.com/method/";
-
+	public void setInternalMention(boolean b) {
+		if(vkJson!=null)
+			if(vkJson.getMessage()!=null)
+				vkJson.getMessage().setInternalIsMention(b);
+	}
+	private boolean isMention = false;
 	public static void setup(Settings settings) {
 		VK.setup(settings.getGroupToken(), // GROUP TOKEN (message permission)
 				settings.getApiVersion());
@@ -97,6 +102,18 @@ public class VK {
 		System.out.println("GROUP_ID: "+GROUP_ID);
 		API_VERSION=apiVersion;
 	}
+
+	public boolean isAdmin() {
+		return MainHandler.checkAdmin(getVK().getFrom_id());
+	}
+
+	public boolean isInternalMention() {
+		if(vkJson!=null)
+			if(vkJson.getMessage()!=null)
+				return vkJson.getMessage().getInternalIsMention();
+		return false;
+	}
+
 	public enum ParseStatus {
 		AWAITING,
 		IN_PROGRESS,
@@ -166,7 +183,6 @@ public class VK {
 		+"&v="+VK.API_VERSION
 		+"&videos="+owner_id+"_"+video_id+"_"+access_key;
 		String response = sendApiRequest(urlHost,urlParams);
-		System.out.println(response);
 		VKAPIResponse vkVideo;
 		if(!(JsonParser.isJson(response))) {
 			return null;

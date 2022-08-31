@@ -40,7 +40,9 @@ public class MainHandler implements Runnable {
 								  "@ИНФО | Включен режим разработки\n"+
 								  "⌛Попробуйте сделать запрос позже";
 	public MainHandler(VK parsedMessage) {
-		this.parsedMessage=parsedMessage; 
+		Boolean isMention = Mentions.isMention(parsedMessage.getVK());
+		parsedMessage.setInternalMention(isMention);
+		this.parsedMessage=parsedMessage;
 	}
 	public static void setPerformOnlyHandler(Boolean bol) {
 		MainHandler.performOnlyOneTask=bol;
@@ -64,7 +66,7 @@ public class MainHandler implements Runnable {
 			if(peer_id==null)
 				return;
 			if(messageEvent|peer_id.equals(from_id) // If pm
-			|(!messageEvent && (Mentions.isMention(parsedMessage.getVK())))) { // If mention
+			|(!messageEvent && (parsedMessage.isInternalMention()))) { // If mention
 				if(!messageEvent&&readByDefault) {
 					VK.markAsRead(parsedMessage.getVK().getPeer_id());
 				}

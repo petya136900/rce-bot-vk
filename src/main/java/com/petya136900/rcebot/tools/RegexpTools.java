@@ -12,8 +12,7 @@ public class RegexpTools {
 		return matcher.find();
 	}
 	public static Boolean checkRegexp(String stringPattern, String text) {
-		Pattern keyP = Pattern.compile(stringPattern, Pattern.CASE_INSENSITIVE);
-		Matcher matcher=keyP.matcher(text.trim().toLowerCase());
+		Matcher matcher = getMatcher(text.toLowerCase(),stringPattern);
 		return matcher.find();
 	}
 	public static String removeFirstString(String message, String remove) {
@@ -33,8 +32,7 @@ public class RegexpTools {
 		}
 	}
 	public static int rIndexOf(String whatRegexp, String text) {
-		Pattern keyP = Pattern.compile(whatRegexp, Pattern.CASE_INSENSITIVE);
-		Matcher matcher=keyP.matcher(text.trim().toLowerCase());
+		Matcher matcher = getMatcher(text.toLowerCase(),whatRegexp);
 		if(matcher.find()) {
 			return matcher.start();
 		} else {
@@ -46,4 +44,8 @@ public class RegexpTools {
 			return "";
 		return new String(new char[times]).replace("\0", s);
 	}
+    public static Matcher getMatcher(String string, String regexp) {
+		Pattern pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
+		return pattern.matcher(string);
+    }
 }

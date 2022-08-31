@@ -25,6 +25,15 @@ public class VKMessage {
 	private String payload;
 	private Boolean is_hidden;
 	private HandlerInterface handler;
+	private Boolean internalIsMention;
+	public void setInternalIsMention(Boolean b) {
+		this.internalIsMention=b;
+	}
+	public Boolean getInternalIsMention(){
+		if(internalIsMention==null)
+			return false;
+		return internalIsMention;
+	}
 	public class Geo {
 		private String type;
 		private Coordinates coordinates;

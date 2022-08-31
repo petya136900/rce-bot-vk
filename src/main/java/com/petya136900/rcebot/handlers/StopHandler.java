@@ -12,9 +12,10 @@ public class StopHandler implements HandlerInterface {
 	@Override
 	public void handle(VK vkContent) {
 		if(MainHandler.checkAdmin(vkContent.getVK().getFrom_id())) {
-			String hostName = vkContent.getVK().getText();
+			String hostName = vkContent.getVK().getText().replaceFirst("stop","")
+					.replaceFirst("стоп","").trim();
 			if(hostName.trim().length()>0)
-				if(!(HostNameHandler.getUserHostname().contains(hostName.trim())))
+				if(!(HostNameHandler.getUserHostname().toLowerCase().contains(hostName.trim().toLowerCase())))
 					return;
 			vkContent.reply("Остановка..");
 			NotifyLoop.stopNotify();
@@ -24,6 +25,7 @@ public class StopHandler implements HandlerInterface {
 			if(LongPoll.getEnabled()) {
 				LongPoll.stopLongPoll();
 			}
+			vkContent.reply("Bye! ^_^");
 			System.exit(0);
 			} else {
 			vkContent.reply("ERROR | Access denied");
