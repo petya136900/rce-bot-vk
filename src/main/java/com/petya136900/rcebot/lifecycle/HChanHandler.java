@@ -6,6 +6,7 @@ import com.petya136900.rcebot.vk.VK;
 import com.petya136900.rcebot.vk.structures.*;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class HChanHandler implements HandlerInterface {
     @Override
@@ -54,23 +55,25 @@ public class HChanHandler implements HandlerInterface {
                 break;
         }
     }
-
+    private void newManga() {
+        AtomicReference<MessageSendResponse.MessageInfo> mi = new AtomicReference<>(vkContent.reply("Loading..."));
+        try {
+            HChanManga[] mangas = HChanParser.getNew(status->{
+                mi.set(mi.get().editMessageOrDeleteAndReply(status));
+            });
+            if(mangas.length>0)
+                mi.set(mi.get().editMessageOrDeleteAndReply(JsonParser.toJson(mangas[0])));
+            else mi.get().editMessageOrDeleteAndReply("Нового нет..");
+        } catch (IOException e) {
+            vkContent.reply("Error: "+e.getLocalizedMessage());
+        }
+    }
     private void unknownCommand() {
         vkContent.reply("Error: Unknown command\n\nTry: exit, new");
     }
 
     private void conversationsUnsupported() {
         vkContent.reply("Sorry, HChan mode is not available in conversations :<");
-    }
-    private void newManga() {
-        try {
-            HChanManga[] mangas = HChanParser.getNew();
-            if(mangas.length>0)
-                vkContent.reply(JsonParser.toJson(mangas[0]));
-            else vkContent.reply("Нового нет..");
-        } catch (IOException e) {
-            vkContent.reply("Error: "+e.getLocalizedMessage());
-        }
     }
     private void mainMenu() {
         vkContent.reply("You're in hchan mode! ^_^",null,

@@ -220,7 +220,8 @@ public class TimetableClient {
 		// (isChat?CreateKeyboardHandler.createDefaultChatKeyboard(peerID):null)
 		//
 		if(bs!=null && bs.getReplace_mainshelude()) {
-			VK.sendMessage(peerID,bs.getTextForReplace(),null,(((!keyboardReplaced)&(!fromKeyboard))?(isChat?CreateKeyboardHandler.createDefaultChatKeyboard(peerID):CreateKeyboardHandler.DEFAULT_PM_KEYBOARD):null));
+			VK.sendMessage(peerID,String.format(bs.getTextForReplace(),("["+beautifyDate(date)+"]\n")),null,
+					(((!keyboardReplaced)&(!fromKeyboard))?(isChat?CreateKeyboardHandler.createDefaultChatKeyboard(peerID):CreateKeyboardHandler.DEFAULT_PM_KEYBOARD):null));
 			return null;
 		}
 		if(pairs.length<1) {
@@ -233,11 +234,9 @@ public class TimetableClient {
 					throw new TimetableException(ExceptionCode.TIMETABLE_FOR_GROUP_NOT_FOUND);
 				}
 				if(!notify) {
-					//if(bs.getReplace_mainshelude()) {
-						//new VK().sendMessage(peerID,bs.getTextForReplace());
-					//} else {
-						VK.sendMessage(peerID,(rceDown?responseTimetable.toString():"")+"Для группы "+groupName+" не найдено расписания",null,(((!keyboardReplaced)&(!fromKeyboard))?(isChat?CreateKeyboardHandler.createDefaultChatKeyboard(peerID):CreateKeyboardHandler.DEFAULT_PM_KEYBOARD):null));
-					//}
+						VK.sendMessage(peerID,(rceDown?responseTimetable.toString()+"\n":"")+
+								"["+beautifyDate(date)+"]\n"+
+								"Для группы "+groupName+" не найдено расписания",null,(((!keyboardReplaced)&(!fromKeyboard))?(isChat?CreateKeyboardHandler.createDefaultChatKeyboard(peerID):CreateKeyboardHandler.DEFAULT_PM_KEYBOARD):null));
 				}
 				return null;
 			}

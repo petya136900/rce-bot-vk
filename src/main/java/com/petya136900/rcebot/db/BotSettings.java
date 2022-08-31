@@ -9,7 +9,7 @@ import com.petya136900.rcebot.tools.Foo;
 public class BotSettings {
 	private Boolean replace_mainshelude=false;
 	private Boolean enabled=true;
-	private String  textForReplace="@INFO | Замена не найдена\n@INFO | Заполнение основного расписания в процессе";
+	private String  textForReplace="%s@INFO | Замена не найдена\n@INFO | Заполнение основного расписания в процессе";
 	private Boolean weekFix=false;
 	private String domain="https://xn--j1al4b.xn--p1ai";
 	private String path="/rasp/";

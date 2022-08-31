@@ -13,6 +13,8 @@ public class HChanManga { // >.content_row
     private String itemContent; // > .item2 .text()
     private String itemLink; // > .item2 >a[0][href]
     private String[] tags; // .manga_row3[1] .item4 .text() .split(",") .forEach(trim())
+    private boolean existInDB = false;
+    private String[] attachs;
     public String getLink() {
         return link;
     }
@@ -72,6 +74,22 @@ public class HChanManga { // >.content_row
     }
     public void setTags(String[] tags) {
         this.tags = tags;
+    }
+
+    public boolean existInDB() {
+        return existInDB;
+    }
+
+    public void setExistInDB(boolean existInDB) {
+        this.existInDB = existInDB;
+    }
+
+    public String[] getAttachs() {
+        return attachs;
+    }
+
+    public void setAttachs(String[] attachs) {
+        this.attachs = attachs;
     }
     // if itemName == Тип ignore it
 }

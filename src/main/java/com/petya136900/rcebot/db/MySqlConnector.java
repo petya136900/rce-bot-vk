@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import com.petya136900.rcebot.handlers.TeacherHandler;
+import com.petya136900.rcebot.lifecycle.HChanManga;
 import com.petya136900.rcebot.pdfparser.TimetablePDF;
 import com.petya136900.rcebot.pdfparser.TimetablePDFPage;
 import com.petya136900.rcebot.pdfparser.TimetablePDFQuadro;
@@ -1651,5 +1652,12 @@ public class MySqlConnector {
 			disc();		
 			class MN {}; throw new TimetableException(ExceptionCode.SQL_UNKWN_ERROR,Foo.getMethodName(MN.class),sqle.getLocalizedMessage(),sqle);
 		}
+	}
+	public static HChanManga getHChanByLink(String link) {
+		// TODO:
+		return new HChanManga();
+    }
+	public static void setHCHan(HChanManga comic) {
+		// TODO:
 	}
 }
