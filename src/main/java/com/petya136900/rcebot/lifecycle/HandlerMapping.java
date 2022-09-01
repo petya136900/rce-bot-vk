@@ -20,7 +20,6 @@ import com.petya136900.rcebot.handlers.FaqHandler;
 import com.petya136900.rcebot.handlers.FixMainMenuHandler;
 import com.petya136900.rcebot.handlers.FurryHandler;
 import com.petya136900.rcebot.handlers.GeoHandler;
-import com.petya136900.rcebot.handlers.HCHandler;
 import com.petya136900.rcebot.handlers.HostNameHandler;
 import com.petya136900.rcebot.handlers.InfoAboutClientHandler;
 import com.petya136900.rcebot.handlers.MultiHandler;
@@ -61,7 +60,7 @@ public class HandlerMapping {
 		addHandler("(^|^( ))+(пар|расписани|замен)+([а-я]{1})+($|( ))+",new TimetableHandler()); // \s
 		addHandler("^(test|тест)$",new TestHandler());
 		addHandler("^(db+.?status)",new DbStatusHandler());
-		addHandler("^(hchan)",new HChanHandler());
+		//addHandler("^(hchan)",new HChanHandler());
 		addHandler("((транс|trans)+(([^a-zа-я])*)?)$",new TransHandler());
 		addHandler("((debug)+(([^a-zа-я])*)?)$",new DebugHandler());
 		addHandler("^(furry|фурри|anime|аниме)",new FurryHandler());
@@ -114,8 +113,6 @@ public class HandlerMapping {
 				}
 			}
 		});
-		//
-		addHandler("^(hc)",new HCHandler());
 		//
 		addHandler("servertime",x->x.reply(VK.getServerTime()+""));
 		//
@@ -205,7 +202,7 @@ public class HandlerMapping {
 			}} catch (Exception e) { vkContent.reply("{L}Stage is null"); }
 		});
 		//////////////////////
-		addPayloadHandler("^(hchan)",new HChanHandler());
+		//addPayloadHandler("^(hchan)",new HChanHandler());
 		addPayloadHandler("^text",new PayloadTextHandler());
 		addPayloadHandler("^test_payload_handler",new InfoAboutClientHandler());
 		addPayloadHandler("^pairs",new TimetableHandler());
@@ -215,7 +212,7 @@ public class HandlerMapping {
 		addPayloadHandler("^cab_on_day",new CabOnDayHandler());
 		addPayloadHandler("^say",new SayHandler());
 		//
-		addCallbackPayloadHandler("^(hchan)",new HChanHandler());
+		//addCallbackPayloadHandler("^(hchan)",new HChanHandler());
 		addCallbackPayloadHandler("^callback1", new CallBack1Handler());
 	}	
 	public static void   addHandler(String regex, HandlerInterface handler) {

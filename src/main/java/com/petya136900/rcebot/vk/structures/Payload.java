@@ -6,11 +6,15 @@ public class Payload {
 	private String handler;
 	private String stage;
 	private String data;
-	//
 	private String command;
 	private String button_type;
 	private String payload;
-	public boolean isUnsupportedCallback() {
+    public Payload(String handler, String stage, String data) {
+		this.handler=handler;
+		this.stage=stage;
+		this.data=data;
+    }
+    public boolean isUnsupportedCallback() {
 		if(command!=null) {
 			if(button_type!=null) {
 				if(command.equals("not_supported_button")&button_type.equals("callback")) {
@@ -20,14 +24,12 @@ public class Payload {
 		}
 		return false;
 	}
-	
 	public Payload getUnsupportedCallbackPayload() {
 		if(payload!=null) {
 			return JsonParser.fromJson(payload, Payload.class);
 		}
 		return null;
 	}
-	
 	public Payload(String handler, String stage) {
 		this.handler=handler;
 		this.stage=stage;
@@ -36,9 +38,8 @@ public class Payload {
 		this.handler=handler;
 	}
 	public Payload() {
-		// TODO Auto-generated constructor stub
-	}
 
+	}
 	public String getHandler() {
 		return handler;
 	}

@@ -9,39 +9,31 @@ public class ResultSetRaccoon implements AutoCloseable {
 	}
 
 	@Override
-    public void close() throws SQLException {
+    public void close() {
 		try {
 			rs.getStatement().close();
-		} catch(SQLException sqle) {
-			//
-		}
+		} catch(SQLException ignored) {}
 		try {
 			rs.close();
-		} catch(SQLException sqle) {
-			//
-		}		
+		} catch(SQLException ignored) {}
     }
 
 	public boolean next() throws SQLException {
-		if(rs.next()) {
-			return true; 
-		} else {
-			return false;
-		}
+		return rs.next();
 	}
 
-	public String getString(String string) throws SQLException {
-		return rs.getString(string);
+	public String getString(String columnLabel) throws SQLException {
+		return rs.getString(columnLabel);
 	}
 
-	public Integer getInt(String string) throws SQLException {
-		return rs.getInt(string);
+	public Integer getInt(String columnLabel) throws SQLException {
+		return rs.getInt(columnLabel);
 	}
 	public Integer getInt(int colNum) throws SQLException {
 		return rs.getInt(colNum);
 	}
-	public Boolean getBoolean(String string) throws SQLException {
-		return rs.getBoolean(string);
+	public Boolean getBoolean(String columnLabel) throws SQLException {
+		return rs.getBoolean(columnLabel);
 	}
 	public Boolean getBoolean(int colNum) throws SQLException {
 		return rs.getBoolean(colNum);
@@ -51,5 +43,8 @@ public class ResultSetRaccoon implements AutoCloseable {
 	}
 	public String getString(int colNum) throws SQLException {
 		return rs.getString(colNum);
+	}
+	public Long getLong(String columnLabel) throws SQLException {
+		return rs.getLong(columnLabel);
 	}
 }

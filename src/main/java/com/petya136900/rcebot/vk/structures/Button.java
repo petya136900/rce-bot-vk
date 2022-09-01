@@ -118,6 +118,17 @@ public class Button {
 		setPayload(new Payload(handler,stage));
 		return this;
 	}
+
+	public Button setData(String s) {
+		Payload cPayload = getPayload(Payload.class);
+		if(cPayload==null)
+			cPayload = new Payload(null,null,s);
+		else
+			cPayload.setData(s);
+		setPayload(cPayload);
+		return this;
+	}
+
 	public enum Type {
 		@SerializedName("text")
 		TEXT("text"),

@@ -12,6 +12,9 @@ public class Mentions {
 	public static void    registerNames(String[] names) {
 		Mentions.names=Arrays.toString(names).replace(" ","").replace("[","").replace("]","").replace(",","|");
 	}
+	public static void clearNames() {
+		names=null;
+	}
 	public static String getNames() {
 		return names;
 	}

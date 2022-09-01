@@ -298,13 +298,17 @@ public class TimetableHandler implements HandlerInterface {
 		boolean isChat = vkContent.getVK().getPeer_id()>=2000000000;
 		try {
 			if (RegexpTools.checkRegexp("( для( ))+(.)*(( )на(( )|$))", message)) {
+				System.out.println("groupAndDate: "+message);
 				setGroupAndDate(message);
 			} else if (RegexpTools.checkRegexp("( на( ))+(.)*(( )для(( )|$))", message)) {
+				System.out.println("dateAndGroup: "+message);
 				setDateAndGroup(message);
 			} else {
 				if (RegexpTools.checkRegexp("(( )на( ))", message)) {
+					System.out.println("date: "+message);
 					setDate(message);
 				} else if (RegexpTools.checkRegexp("(( )для( ))", message)) {
+					System.out.println("group: "+message);
 					setGroup(message);
 				}
 			}

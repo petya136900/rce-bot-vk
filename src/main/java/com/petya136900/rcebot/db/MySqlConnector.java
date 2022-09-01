@@ -370,11 +370,32 @@ public class MySqlConnector {
 				} else {
 					//System.out.println("ALREADY CREATED");
 				}				
-			}	
+			}
+			step=27;
+			System.out.println("Step: 27");
+			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SHOW TABLES LIKE 'hchan_table'");) {
+				if(!rs.next()) {
+					step=28;
+					System.out.println("Step: 28");
+					sqlExecuteUpdate(conn,"CREATE TABLE `"+DB_NAME+"`.`hchan_table` ( "
+								+ "`ID` BIGINT NOT NULL AUTO_INCREMENT , "
+								+ "`link` VARCHAR(256) NOT NULL , "
+								+ "`parsed` BOOLEAN NOT NULL DEFAULT FALSE , "
+								+ "`attachs` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci , "
+								+ "`jsonData` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL , "
+								+ "`tags` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci "
+								+ ", PRIMARY KEY (`ID`), UNIQUE (`link`)"
+							+ ") ENGINE = "+DB_ENGINE+";");
+					step=29;
+					System.out.println("Step: 29");
+				}
+			}
+			step=30;
+			System.out.println("Step: 30");
 			dbExist=true;			
-			//System.out.println(Thread.currentThread().getName()+" | "+"Подключен к таблице-БД: "+DB_NAME);
+			System.out.println(Thread.currentThread().getName()+" | "+"Подключен к таблице-БД: "+DB_NAME);
 		} catch(SQLException sqle) {
-			//System.out.println(Thread.currentThread().getName()+" | "+"Не удалось подключиться к таблице: "+DB_NAME);
+			System.out.println(Thread.currentThread().getName()+" | "+"Не удалось подключиться к таблице: "+DB_NAME);
 			sqle.printStackTrace();
 			disc();					
 			class MN {}; throw new TimetableException(ExceptionCode.SQL_CHECK_ERROR,Foo.getMethodName(MN.class),sqle.getLocalizedMessage(),sqle,step+"");
@@ -1654,10 +1675,69 @@ public class MySqlConnector {
 		}
 	}
 	public static HChanManga getHChanByLink(String link) {
-		// TODO:
+		HChanSQLObject sqlObject;
+		try {
+			checkMySqlServer();
+			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SELECT * FROM 'hchan_table' WHERE link='"+link+"'");) {
+				System.out.println("Query Chan: "+rs.getRs().getStatement().toString());
+				if(rs.next()) {
+					System.out.println("Found");
+					sqlObject = new HChanSQLObject(
+							rs.getLong("ID"),
+							rs.getString("link"),
+							rs.getBoolean("parsed"),
+							rs.getString("attachs"),
+							rs.getString("jsonData"),
+							rs.getString("tags")
+						);
+					sqlObject.setExist(true);
+					return new HChanManga(sqlObject);
+				}
+				System.out.println("Not Found");
+			}
+		} catch(Exception sqle) {
+			sqle.printStackTrace();
+			disc();
+		}
 		return new HChanManga();
     }
-	public static void setHCHan(HChanManga comic) {
-		// TODO:
+	public static void saveHCHan(HChanManga comic, Boolean updateIfExist) throws TimetableException {
+		HChanSQLObject sqlObject = new HChanSQLObject(comic);
+		try {
+			checkMySqlServer();
+			System.out.println("Trying to save: "+JsonParser.toJson(comic));
+			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SELECT * FROM 'hchan_table' WHERE link='"+sqlObject.getLink()+"'");) {
+				System.out.println("Trying to save: 2");
+				if(rs.next()) {
+					System.out.println("Trying to save: 3");
+					if(updateIfExist) {
+						sqlExecuteUpdate(conn, "UPDATE `hchan_table` SET "
+								+ "`parsed` = '" + sqlObject.isParsed() + "' ,"
+								+ "`attachs` = '" + sqlObject.getAttaches() + "' ,"
+								+ "`jsonData` = '" + sqlObject.getJsonData() + "' ,"
+								+ "`tags` = '" + sqlObject.getTags() + "' "
+								+ "WHERE link = '" + sqlObject.getLink() + "';");
+					}
+				} else {
+					System.out.println("Trying to save: 4");
+					sqlExecuteUpdate(conn,"INSERT INTO `"+DB_NAME+"`.`hchan_table` (`link`,`parsed`,`attachs`,`jsonData`,`tags`) "
+							+ "VALUES ('"+
+								sqlObject.getLink() + "','" +
+								sqlObject.isParsed() + "','" +
+								sqlObject.getAttaches() + "','" +
+								sqlObject.getJsonData() + "','" +
+								sqlObject.getTags()
+							+"')");
+					System.out.println("Trying to save: 5");
+				}
+			}
+		} catch(SQLException sqle) {
+			System.out.println("Trying to save: 10");
+			sqle.printStackTrace();
+			disc();
+		}
+	}
+	public static void stop() {
+		disc();
 	}
 }

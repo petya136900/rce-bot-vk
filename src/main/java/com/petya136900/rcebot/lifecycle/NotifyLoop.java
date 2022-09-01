@@ -20,6 +20,11 @@ public class NotifyLoop extends Thread {
 	public NotifyLoop() {
 		//
 	}
+	public static boolean isRunning() {
+		if(thisThread==null)
+			return false;
+		return thisThread.isAlive();
+	}
 	public static void stopNotify() {
 		if(thisThread!=null) {
 			thisThread.interrupt();

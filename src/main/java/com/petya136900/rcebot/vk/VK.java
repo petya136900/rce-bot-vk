@@ -54,7 +54,15 @@ public class VK {
 				vkJson.getMessage().setInternalIsMention(b);
 	}
 	private boolean isMention = false;
+	private static Settings settings;
+	public static void rerun() {
+		if(settings==null)
+			throw new IllegalArgumentException("The bot has not been run before");
+		clearNames();
+		setup(settings);
+	}
 	public static void setup(Settings settings) {
+		VK.settings=settings;
 		VK.setup(settings.getGroupToken(), // GROUP TOKEN (message permission)
 				settings.getApiVersion());
 		settings.addBotName("club"+GROUP_ID);
@@ -261,6 +269,9 @@ public class VK {
 	}
 	public static void registerNames(String[] names) {
 		Mentions.registerNames(names);
+	}
+	public static void clearNames() {
+		Mentions.clearNames();
 	}
 	public static boolean isReadByDefault() {
 		return MainHandler.isReadByDefault();
