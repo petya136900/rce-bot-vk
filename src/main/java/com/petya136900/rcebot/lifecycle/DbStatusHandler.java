@@ -5,6 +5,8 @@ import com.petya136900.rcebot.handlers.HostNameHandler;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
 import com.petya136900.rcebot.tools.RegexpTools;
 import com.petya136900.rcebot.vk.VK;
+import com.petya136900.rcebot.vk.other.CallBack;
+import com.petya136900.rcebot.vk.other.LongPoll;
 import com.petya136900.rcebot.vk.structures.MessageSendResponse;
 
 import java.util.ArrayList;
@@ -35,6 +37,14 @@ public class DbStatusHandler implements HandlerInterface {
                     wNotify=true;
                     NotifyLoop.stopNotify();
                     reply("Notified stopped..");
+                }
+                if(CallBack.getEnabled()) {
+                    CallBack.stop();
+                    reply("CallBack stopped..");
+                }
+                if(LongPoll.getEnabled()) {
+                    LongPoll.stopLongPoll();
+                    reply("LongPoll stopped..");
                 }
                 reply("Waiting 5000ms..");
                 try {Thread.sleep(5000); }catch (Exception ignored) {}

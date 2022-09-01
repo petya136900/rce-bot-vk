@@ -21,8 +21,7 @@ public class SpringServer extends Thread {
 	public void startServer() {
 		if(!SpringServer.serverStarted) {
 			SpringServer.serverStarted=true;
-			//springApp = SpringApplication.run(SpringServer.class, args);
-			start(SpringServer.class).properties("server.port=${other.port:"+this.port+"}").run(args);
+			springApp = start(SpringServer.class).properties("server.port=${other.port:" + this.port + "}").run(args);
 		} else {
 			Logger.printInfo("Server already started");
 		}

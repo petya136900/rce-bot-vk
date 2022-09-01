@@ -115,6 +115,7 @@ public class NotifyLoop extends Thread {
 						}				
 			}
 		}
+		System.out.println("NotifyLoop stopped");
 	}
 	private String addDay(String day) throws TimetableException {
 		try {
