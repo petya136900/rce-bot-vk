@@ -112,6 +112,7 @@ public class DbStatusHandler implements HandlerInterface {
         }
         endTime = System.currentTimeMillis();
         results.add(endTime - startTime);
+        try {Thread.sleep(1500); }catch (Exception ignored) {}
     }
     private void reply(String s) {
         mi = mi.editMessageOrDeleteAndReply("["+HostNameHandler.getUserHostname()+"] | "+s);
