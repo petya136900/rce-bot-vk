@@ -1678,7 +1678,7 @@ public class MySqlConnector {
 		HChanSQLObject sqlObject;
 		try {
 			checkMySqlServer();
-			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SELECT * FROM 'hchan_table' WHERE link='"+link+"'");) {
+			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SELECT * FROM hchan_table WHERE link='"+link+"'");) {
 				System.out.println("Query Chan: "+rs.getRs().getStatement().toString());
 				if(rs.next()) {
 					System.out.println("Found");
@@ -1706,7 +1706,7 @@ public class MySqlConnector {
 		try {
 			checkMySqlServer();
 			System.out.println("Trying to save: "+JsonParser.toJson(comic));
-			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SELECT * FROM 'hchan_table' WHERE link='"+sqlObject.getLink()+"'");) {
+			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SELECT * FROM hchan_table WHERE link='"+sqlObject.getLink()+"'");) {
 				System.out.println("Trying to save: 2");
 				if(rs.next()) {
 					System.out.println("Trying to save: 3");
