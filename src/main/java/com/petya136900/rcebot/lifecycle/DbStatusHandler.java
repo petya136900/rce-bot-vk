@@ -25,12 +25,12 @@ public class DbStatusHandler implements HandlerInterface {
         this.vkContent=vkContent;
         String message = vkContent.getVK().getText();
         if(MainHandler.checkAdmin(vkContent.getVK().getFrom_id())) {
-            if(!locker.tryAcquire()) {
-                vkContent.reply(HostNameHandler.getUserHostname()+" | Test already running!");
-                return;
-            }
             vkContent.reply(MySqlConnector.toStringStatic());
             if(message!=null&& RegexpTools.checkRegexp("test",message)) {
+                if(!locker.tryAcquire()) {
+                    vkContent.reply(HostNameHandler.getUserHostname()+" | Test already running!");
+                    return;
+                }
                 mi = vkContent.reply("Preparing MySQL test..");
                 reply("Preparing MySQL test..");
                 if(NotifyLoop.isRunning()) {
