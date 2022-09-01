@@ -19,14 +19,14 @@ public class DbStatusHandler implements HandlerInterface {
     private static final Semaphore locker = new Semaphore(1);
     @Override
     public void handle(VK vkContent) {
-        if(!locker.tryAcquire()) {
-            vkContent.reply(HostNameHandler.getUserHostname()+" | Test already running!");
-            return;
-        }
         results = new ArrayList<>();
         this.vkContent=vkContent;
         String message = vkContent.getVK().getText();
         if(MainHandler.checkAdmin(vkContent.getVK().getFrom_id())) {
+            if(!locker.tryAcquire()) {
+                vkContent.reply(HostNameHandler.getUserHostname()+" | Test already running!");
+                return;
+            }
             vkContent.reply(MySqlConnector.toStringStatic());
             if(message!=null&& RegexpTools.checkRegexp("test",message)) {
                 mi = vkContent.reply("Preparing MySQL test..");
