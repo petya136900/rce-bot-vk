@@ -372,11 +372,9 @@ public class MySqlConnector {
 				}				
 			}
 			step=27;
-			System.out.println("Step: 27");
 			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SHOW TABLES LIKE 'hchan_table'");) {
 				if(!rs.next()) {
 					step=28;
-					System.out.println("Step: 28");
 					sqlExecuteUpdate(conn,"CREATE TABLE `"+DB_NAME+"`.`hchan_table` ( "
 								+ "`ID` BIGINT NOT NULL AUTO_INCREMENT , "
 								+ "`link` VARCHAR(256) NOT NULL , "
@@ -387,13 +385,11 @@ public class MySqlConnector {
 								+ ", PRIMARY KEY (`ID`), UNIQUE (`link`)"
 							+ ") ENGINE = "+DB_ENGINE+";");
 					step=29;
-					System.out.println("Step: 29");
 				}
 			}
 			step=30;
-			System.out.println("Step: 30");
 			dbExist=true;			
-			System.out.println(Thread.currentThread().getName()+" | "+"Подключен к таблице-БД: "+DB_NAME);
+			//System.out.println(Thread.currentThread().getName()+" | "+"Подключен к таблице-БД: "+DB_NAME);
 		} catch(SQLException sqle) {
 			System.out.println(Thread.currentThread().getName()+" | "+"Не удалось подключиться к таблице: "+DB_NAME);
 			sqle.printStackTrace();
