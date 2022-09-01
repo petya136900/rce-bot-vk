@@ -32,56 +32,65 @@ public class DbStatusHandler implements HandlerInterface {
                     return;
                 }
                 mi = vkContent.reply("Preparing MySQL test..");
-                reply("Preparing MySQL test..");
-                if(NotifyLoop.isRunning()) {
-                    wNotify=true;
-                    NotifyLoop.stopNotify();
-                    reply("Notified stopped..");
-                }
-                if(CallBack.getEnabled()) {
-                    CallBack.stop();
-                    reply("CallBack stopped..");
-                }
-                if(LongPoll.getEnabled()) {
-                    LongPoll.stopLongPoll();
-                    reply("LongPoll stopped..");
-                }
-                reply("Waiting 5000ms..");
-                try {Thread.sleep(5000); }catch (Exception ignored) {}
-                Thread animThread = null;
-                try {
-                    animThread = new Thread(() -> {
-                        int s = 0;
-                        while (true) {
-                            if (s > 3)
-                                s = 0;
-                            reply("DB test is running" + anim(s));
-                            s++;
-                            synchronized (this) {
-                                try {
-                                    wait(350);
-                                } catch (InterruptedException e) {
-                                    break;
+                Thread testThread = new Thread(()->{
+                    if(NotifyLoop.isRunning()) {
+                        wNotify=true;
+                        NotifyLoop.stopNotify(true);
+                        reply("Notified stopped..");
+                        try {Thread.sleep(500); }catch (Exception ignored) {}
+                    }
+                    if(CallBack.getEnabled()) {
+                        CallBack.stop();
+                        reply("CallBack stopped..");
+                        try {Thread.sleep(500); }catch (Exception ignored) {}
+                    }
+                    if(LongPoll.getEnabled()) {
+                        LongPoll.stopLongPoll();
+                        reply("LongPoll stopped..");
+                        try {Thread.sleep(500); }catch (Exception ignored) {}
+                    }
+                    reply("Waiting 5000ms..");
+                    try {Thread.sleep(5000); }catch (Exception ignored) {}
+                    Thread animThread = null;
+                    try {
+                        animThread = new Thread(() -> {
+                            int s = 0;
+                            while (true) {
+                                if (s > 3)
+                                    s = 0;
+                                reply("DB test is running" + anim(s));
+                                s++;
+                                synchronized (this) {
+                                    try {
+                                        wait(350);
+                                    } catch (InterruptedException e) {
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                    });
-                    animThread.start();
-                    check();
-                    check();
-                    check();
-                    check();
-                    check();
-                    check();
-                } finally {
+                        });
+                        animThread.start();
+                        check();
+                        check();
+                        check();
+                        check();
+                        check();
+                        check();
+                    } catch(Exception ignored) {}
                     if(animThread!=null)
                         animThread.interrupt();
                     locker.release();
                     VK.rerun();
-                    if(wNotify)
-                        new Thread(new NotifyLoop()).start();
-                }
-                reply("Results: \n\n"+(results.stream().map(String::valueOf).collect(Collectors.joining("ms\n")))+"ms");
+                    if(wNotify) {
+                        NotifyLoop nl = new NotifyLoop();
+                        nl.setDaemon(false);
+                        nl.start();
+                    }
+                    reply("Results: \n\n"+(results.stream().map(String::valueOf).collect(Collectors.joining("ms\n")))+"ms");
+                });
+                testThread.setDaemon(false);
+                try {Thread.sleep(500); }catch (Exception ignored) {}
+                testThread.start();
             }
         }
     }

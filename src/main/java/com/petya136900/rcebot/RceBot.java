@@ -42,7 +42,9 @@ public class RceBot {
 		Logger.setSendToVk(!settings.getTestMode());
 
 		if(!settings.getTestMode()) {
-			new Thread(new NotifyLoop()).start();
+			NotifyLoop nl = new NotifyLoop();
+			nl.setDaemon(false);
+			nl.start();
 		}
 	}
 }

@@ -29,14 +29,12 @@ public class SpringServer extends Thread {
 	public void stopServer() {
 		if(springApp!=null) {
 			Logger.printInfo("Stopping server..");
-			springApp.stop();
 			springApp.close();
+			serverStarted=false;
 		}
 	}
 	@Override 
-	public void run() {
-		startServer();
-	}
+	public void run() { startServer(); }
 	private static SpringApplicationBuilder start(Class<?>... sources) {
 	    return new SpringApplicationBuilder(SpringServer.class)
 	        	        .child(sources);

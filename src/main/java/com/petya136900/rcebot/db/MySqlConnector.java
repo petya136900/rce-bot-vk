@@ -37,7 +37,7 @@ import com.petya136900.rcebot.vk.VK;
 
 public class MySqlConnector {
 	public static String toStringStatic() {
-		try { connectToDB(); } catch (Exception ignored) {}
+		try { checkMySqlServer(); } catch (Exception ignored) {}
 		StringBuilder sb = new StringBuilder()
 				.append("DB_URI: " + DB_URI + "\n")
 				.append("DB_PORT: " + DB_PORT + "\n")

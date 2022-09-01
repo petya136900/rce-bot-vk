@@ -17,6 +17,7 @@ import com.petya136900.rcebot.vk.VK;
 
 public class NotifyLoop extends Thread {
 	private static Thread thisThread;
+	private static boolean worked = false;
 	public NotifyLoop() {
 		//
 	}
@@ -25,15 +26,26 @@ public class NotifyLoop extends Thread {
 			return false;
 		return thisThread.isAlive();
 	}
-	public static void stopNotify() {
-		if(thisThread!=null) {
-			thisThread.interrupt();
+	public static void stopNotify(Boolean wait) {
+		if(isRunning()) {
+			worked = false;
+			if (wait)
+				if (thisThread != null)
+					try {
+						thisThread.interrupt();
+						thisThread.join();
+					} catch (Exception ignored) {}
 		}
 	}
 	@Override
 	public void run() {
-		NotifyLoop.thisThread=Thread.currentThread();
-		while(!(currentThread().isInterrupted())) {
+		if(worked) {
+			System.err.println("NotifyLoop already started");
+			return;
+		}
+		thisThread=Thread.currentThread();
+		worked=true;
+		while(worked) {
 			try {
 				BotSettings bs = MySqlConnector.getBotSettings();
 				if(bs.getEnabled()) {
@@ -94,17 +106,19 @@ public class NotifyLoop extends Thread {
 							}
 						}
 						try {
-							Thread.sleep(50);
-						} catch (InterruptedException e) {
-							throw new RuntimeException(e);
+							if(worked)
+								Thread.sleep(50);
+						} catch (InterruptedException ignored) {
+							worked=false;
+							break;
 						}
 					}
 				}
 				try {
-					Thread.sleep(1000*60*7);
-					//Thread.sleep(1000*10);
-				} catch (InterruptedException e) {	
-					// vk.sendMessage(vk.getAdminID(),"");
+					if(worked)
+						Thread.sleep(1000*60*7);
+				} catch (InterruptedException ignored) {
+					worked=false;
 				}
 			} catch(TimetableException te) {
 				if(!(te.getCode().equals(ExceptionCode.BAD_DAY))
@@ -113,9 +127,10 @@ public class NotifyLoop extends Thread {
 						&!(te.getCode().equals(ExceptionCode.SUNDAY))) {
 							VK.sendMessage(VK.getAdminID(), te.messageErrorNotify());
 						}				
-			}
+			} catch (Exception ignored) {}
 		}
-		System.out.println("NotifyLoop stopped");
+		thisThread=null;
+		worked=false; // if any exception happened
 	}
 	private String addDay(String day) throws TimetableException {
 		try {

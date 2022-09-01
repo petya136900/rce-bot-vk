@@ -18,7 +18,7 @@ public class StopHandler implements HandlerInterface {
 				if(!(HostNameHandler.getUserHostname().toLowerCase().contains(hostName.trim().toLowerCase())))
 					return;
 			vkContent.reply("Остановка..");
-			NotifyLoop.stopNotify();
+			NotifyLoop.stopNotify(false);
 			if(CallBack.getEnabled()) {
 				CallBack.stop();
 			} 

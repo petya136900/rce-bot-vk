@@ -15,7 +15,8 @@ public class CallBack {
 				callBackEnabled=true;
 				springServer = new SpringServer(args);
 				springServer.setPort(port);
-				new Thread(springServer).start(); //
+				springServer.setDaemon(false);
+				springServer.start();
 			} else {
 				System.out.println("Callback already launched");
 			}
@@ -26,7 +27,10 @@ public class CallBack {
 	
 	public static void stop() {
 		if(springServer!=null) {
-			springServer.stopServer();
+			try {
+				springServer.stopServer();
+			} catch (Exception ignored) {}
+			callBackEnabled=false;
 		} 
 	}
 	public static void setConfirmationCode(String confirmationCode) {

@@ -113,9 +113,9 @@ public class LongPoll extends Thread {
 			if(!longPollEnabled) {
 				longPollEnabled=true;
 				System.out.println("Запуск LongPoll-сервера..");
-				longPollThread = new Thread(new LongPoll());
+				longPollThread = new LongPoll();
+				longPollThread.setDaemon(false);
 				longPollThread.start();
-				//
 			} else {
 				System.out.println("LongPoll уже запущен");
 			}
