@@ -48,8 +48,9 @@ public class DbStatusHandler implements HandlerInterface {
                 }
                 reply("Waiting 5000ms..");
                 try {Thread.sleep(5000); }catch (Exception ignored) {}
+                Thread animThread = null;
                 try {
-                    new Thread(() -> {
+                    animThread = new Thread(() -> {
                         int s = 0;
                         while (true) {
                             if (s > 3)
@@ -64,7 +65,8 @@ public class DbStatusHandler implements HandlerInterface {
                                 }
                             }
                         }
-                    }).start();
+                    });
+                    animThread.start();
                     check();
                     check();
                     check();
@@ -72,6 +74,8 @@ public class DbStatusHandler implements HandlerInterface {
                     check();
                     check();
                 } finally {
+                    if(animThread!=null)
+                        animThread.interrupt();
                     locker.release();
                     VK.rerun();
                     if(wNotify)
