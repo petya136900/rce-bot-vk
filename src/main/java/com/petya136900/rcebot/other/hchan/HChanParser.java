@@ -1,4 +1,4 @@
-package com.petya136900.rcebot.lifecycle;
+package com.petya136900.rcebot.other.hchan;
 
 import com.google.re2j.Matcher;
 import com.petya136900.rcebot.db.MySqlConnector;

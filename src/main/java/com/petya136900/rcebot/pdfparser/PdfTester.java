@@ -1,10 +1,9 @@
 package com.petya136900.rcebot.pdfparser;
 
-import java.io.IOException;
 import java.net.URL;
 
 public class PdfTester {
-    public static void main(String[] args) throws IOException, Exception {
+    public static void main(String[] args) throws Exception {
     //	PdfParser pdfParser = new PdfParser("C:\\Apache24\\htdocs\\rasp\\220120205.pdf",true);
     	String[] rasps = new String[] {
     			"01062020.pdf",
@@ -36,12 +35,12 @@ public class PdfTester {
     			"300620201.pdf",
     			"300620202.pdf",  			
     	};
-    	System.out.println("Начинаю парсинг "+rasps.length+" пдф");
+    	System.out.println("Starting parse "+rasps.length+" pdf");
     	long start = System.currentTimeMillis();
     	for(String rasp : rasps) {
         	PdfParser pdfParser = new PdfParser(new URL("http://localhost/rasp/"+rasp),true);
         	pdfParser.parse();
     	}
-    	System.out.println("Парсинг завершен за "+(System.currentTimeMillis()-start)+"ms");
+    	System.out.println("Parsing complete in "+(System.currentTimeMillis()-start)+"ms");
 	}
 }

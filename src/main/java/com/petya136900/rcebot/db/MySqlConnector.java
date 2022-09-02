@@ -10,7 +10,8 @@ import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import com.petya136900.rcebot.handlers.TeacherHandler;
-import com.petya136900.rcebot.lifecycle.HChanManga;
+import com.petya136900.rcebot.other.hchan.HChanManga;
+import com.petya136900.rcebot.other.hchan.HChanSQLObject;
 import com.petya136900.rcebot.pdfparser.TimetablePDF;
 import com.petya136900.rcebot.pdfparser.TimetablePDFPage;
 import com.petya136900.rcebot.pdfparser.TimetablePDFQuadro;
@@ -135,7 +136,7 @@ public class MySqlConnector {
 	}
 	synchronized private static void reconnect() throws TimetableException {
 		if(reconnectPending) {
-			System.out.println("Очистка подключенияя");
+			System.out.println("Reconnecting to DB");
 			disc();
 			connectToDB();
 			reconnectPending=false;

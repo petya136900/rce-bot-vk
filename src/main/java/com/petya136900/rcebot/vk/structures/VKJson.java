@@ -2,11 +2,10 @@ package com.petya136900.rcebot.vk.structures;
 
 import java.util.HashMap;
 
-import com.petya136900.rcebot.lifecycle.DataStorage;
+import com.petya136900.rcebot.tools.DataStorage;
 import com.petya136900.rcebot.lifecycle.HandlerInterface;
 import com.petya136900.rcebot.lifecycle.MainHandler;
 import com.petya136900.rcebot.lifecycle.Stage;
-import com.petya136900.rcebot.tools.JsonParser;
 import com.petya136900.rcebot.vk.structures.VKMessage.Geo;
 
 public class VKJson {

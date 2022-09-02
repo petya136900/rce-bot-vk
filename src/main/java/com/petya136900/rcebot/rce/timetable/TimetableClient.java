@@ -425,7 +425,7 @@ public class TimetableClient {
 					+"_Date AfterParse: "+this.date);
 	}
 	public static String removeTrash(String string) {
-		string = RegexpTools.removeAllString(string, "(групп)+(.)?(\\b|$)");
+		string = RegexpTools.removeAllString(string, "(групп)+(.)*?($| )");
 		string=string.replaceAll("\\s","").toUpperCase();
 		StringBuilder sb = new StringBuilder();
 		String add;

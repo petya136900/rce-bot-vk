@@ -2,7 +2,6 @@ package com.petya136900.rcebot.lifecycle;
 
 import com.petya136900.rcebot.db.MySqlConnector;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
-import com.petya136900.rcebot.tools.JsonParser;
 import com.petya136900.rcebot.vk.VK;
 import com.petya136900.rcebot.vk.structures.*;
 import org.fusesource.jansi.AnsiConsole;
@@ -48,7 +47,7 @@ public class Logger extends Thread {
 				.a(" |")
 				.fgBrightCyan().a(message).fg(DEFAULT)
 				);		
-		if(sendToVk) {
+		if(getSendToVk()) {
 			VK.sendMessage(logsPeerID, getCurTime()+" |"+message);
 		}
 	}
@@ -81,7 +80,7 @@ public class Logger extends Thread {
 		Payload payload = vk.getVK().getObject().getPayload();
 		String handler = payload.getHandler();
 		String stage = payload.getStage();
-		if(checkSql) {
+		if(getCheckSql()) {
 			try {
 				groupName = MySqlConnector.getGroupNameByPeerID(peer_id);
 			} catch(TimetableException te) {
@@ -116,7 +115,7 @@ public class Logger extends Thread {
 				.fgBrightBlue().a("stage: ").fg(DEFAULT)
 				.fgBrightCyan().a(stage).fg(DEFAULT)
 		);
-		if(sendToVk) {
+		if(getSendToVk()) {
 			VK.sendMessage(logsPeerID, convertDate(curTime)+"\n"
 					+ "@CallBack-button\n"
 					+ "peer_id: "+peer_id+"\n"
@@ -131,11 +130,11 @@ public class Logger extends Thread {
 		//StringBuilder sb = new StringBuilder("");
 		boolean rootQ=true;
 		if(sb==null) {
-			sb = new StringBuilder("");
+			sb = new StringBuilder();
 		} else {
 			rootQ=false;
 		}
-		if(checkSql) {
+		if(getCheckSql()) {
 			try {
 				groupName = MySqlConnector.getGroupNameByPeerID(peer_id);
 			} catch(TimetableException te) {
@@ -203,15 +202,16 @@ public class Logger extends Thread {
 							+attachment.getPhoto().getMaxSize().getUrl()+"\n");
 				break;
 				case("video"):
+					desc = ((desc = attachment.getVideo().getDescription())!=null?(desc.length()>0?(" - "+desc):""):"");
 					System.out.println(ansi()
 							.fgBrightMagenta().a("\tВидео:").fg(DEFAULT)
 							.a(" |")
 							.fgBrightYellow().a("("+attachment.getVideo().getTitle()+
-									((desc = attachment.getVideo().getDescription()).length()>0?(" - "+desc):"")+")").fg(DEFAULT)
+									desc+")").fg(DEFAULT)
 							.a(" |")
 							.fgBrightCyan().a("URL: "+attachment.getVideo().getPlayer()).fg(DEFAULT));
 					sb.append(" Видео: "+"("+attachment.getVideo().getTitle()+
-							((desc = attachment.getVideo().getDescription()).length()>0?(" - "+desc):"")+")\n"+
+							desc+")\n"+
 							attachment.getVideo().getPlayer());
 				break;
 				case("doc"):
@@ -289,7 +289,7 @@ public class Logger extends Thread {
 			}
 		}
 		if(rootQ) {
-			if(sendToVk) {
+			if(getSendToVk()) {
 				VK.sendMessage(logsPeerID, sb.toString());
 			}
 		}

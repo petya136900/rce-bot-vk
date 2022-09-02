@@ -1,6 +1,5 @@
-package com.petya136900.rcebot.lifecycle;
+package com.petya136900.rcebot.other.hchan;
 
-import com.petya136900.rcebot.db.HChanSQLObject;
 import com.petya136900.rcebot.tools.JsonParser;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.petya136900.rcebot.lifecycle;
+package com.petya136900.rcebot.vk.other;
 
 import java.util.concurrent.ConcurrentHashMap;
 

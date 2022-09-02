@@ -50,8 +50,8 @@ public class CabinetHandler implements HandlerInterface {
 				break;
 			}
 		}
-		String message = vkContent.getVK().getText().toLowerCase().trim().replaceFirst("(^каб)+(.)*?\\b","");
-		message = message.trim().replaceFirst("(^палат)+(.)*?\\b","");
+		String message = vkContent.getVK().getText().toLowerCase().trim().replaceFirst("(^каб)+(.)*?($| )","");
+		message = message.trim().replaceFirst("(^палат)+(.)*?($| )","");
 		String date = "";
 		String cabinet = "";
 		Integer dateInt=null; 
@@ -62,8 +62,6 @@ public class CabinetHandler implements HandlerInterface {
 		Boolean needStep2 = false;
 		// Кабинет *
 		//System.out.println("Cab: "+message);
-		
-	
 		Boolean keyboardReplaced = true;
 		try {
 			keyboardReplaced = MySqlConnector.getKeyboardReplaced(vkContent.getVK().getPeer_id());
@@ -76,10 +74,10 @@ public class CabinetHandler implements HandlerInterface {
 				if(message.contains("@")) {
 					needStep2=true;
 				}
-				if(RegexpTools.checkRegexp("\\bна\\b", message)) {
-					stringDate = message.substring(RegexpTools.rIndexOf("\\bна\\b",message));
+				if(RegexpTools.checkRegexp("(( )на( ))", message)) {
+					stringDate = message.substring(RegexpTools.rIndexOf("(( )на( ))",message));
 					date = TimetableClient.checkDate(stringDate);
-					cabinet = message.substring(0, RegexpTools.rIndexOf("\\bна\\b",message)).trim();
+					cabinet = message.substring(0, RegexpTools.rIndexOf("(( )на( ))",message)).trim();
 				} else {
 					date = TimetableClient.getCurDay();
 					cabinet = message.trim();

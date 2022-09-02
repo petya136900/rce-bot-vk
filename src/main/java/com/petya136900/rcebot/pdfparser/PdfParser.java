@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
+import com.petya136900.rcebot.lifecycle.Logger;
 import com.petya136900.rcebot.pdfparser.RaccoonTextExtractionStrategy.StringData;
 import com.petya136900.rcebot.rce.timetable.BlockPair;
 import com.petya136900.rcebot.rce.timetable.TimetableBlock;
@@ -26,14 +27,13 @@ public class PdfParser {
 	private ArrayList<Pair<Float, String>> stringDetails=null;
 	private PdfReader reader=null;
 	private String filename="";
-    public PdfParser(String pdf, Boolean debug) throws IOException {
-    	File timeTablePdfFile = new File(pdf); // new File(pdf);
+    public PdfParser(String pathToPdfFile, Boolean debug) throws IOException {
+    	File timeTablePdfFile = new File(pathToPdfFile);
     	this.reader=new PdfReader(timeTablePdfFile.getAbsolutePath());
     	this.filename=timeTablePdfFile.getName();
     	this.debug=debug;
     }
 	public PdfParser(URL url, boolean debug) throws IOException {
-		
 		HttpURLConnection.setFollowRedirects(false);
 		//System.out.println("2Открываю соединение..");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -41,8 +41,7 @@ public class PdfParser {
 		//System.out.println("GET");
 		conn.setRequestMethod("GET");
 		//System.out.println(conn.getResponseCode());
-		//System.out.println(conn.getResponseMessage());		
-		
+		//System.out.println(conn.getResponseMessage());
 		this.reader=new PdfReader(conn.getInputStream());
 		this.filename=url.getPath().substring(url.getPath().lastIndexOf("/")+1);
     	this.debug=debug;
@@ -62,6 +61,7 @@ public class PdfParser {
         		System.err.println("Can't create logFile: "+parseLog!=null?parseLog.getAbsolutePath():null);
 			}
         }
+		Logger.printInfo("New timetable found: "+filename);
         TimetablePDF tpdf;
         if(filename.contains("%A0%D0%B0%D1%81%D0%BF%D0")) {
         	filename = filename.replace("%D0%A0%D0%B0%D1%81%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%B7%D0%B2%D0%BE%D0%BD%D0%BA%D0%BE%D0%B2%20%D0%BD%D0%B0%20", "")
@@ -248,10 +248,12 @@ public class PdfParser {
 						}
 					}
 				}
-				System.out.println("Пара#"+i+": "+strings.get(lineNum).getValue().trim());
-				if(debug&logCreated) {
-					fw.append(strings.get(lineNum).getValue()+"\n");
-	            	fw.append("[y "+stringDetails.get(lineNum).getKey().toString()+"]:" + " " + stringDetails.get(lineNum).getValue().replaceAll("\\[x:", "\n\t\\[x:")+"\n");
+				if(debug) {
+					System.out.println("Пара#"+i+": "+strings.get(lineNum).getValue().trim());
+					if(logCreated) {
+						fw.append(strings.get(lineNum).getValue()+"\n");
+						fw.append("[y "+stringDetails.get(lineNum).getKey().toString()+"]:" + " " + stringDetails.get(lineNum).getValue().replaceAll("\\[x:", "\n\t\\[x:")+"\n");
+					}
 				}
 				TreeMap<Float, StringData> stringObject = stringObjects.get(new RaccoonFloat(key));
 				if(supportStrings!=null) {

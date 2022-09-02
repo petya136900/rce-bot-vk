@@ -71,7 +71,7 @@ public class VK {
 		if(settings.getAdminID()!=null)
 			VK.setAdminID(settings.getAdminID());
 		if(settings.getTestMode()!=null)
-			VK.setTestMode(getTestMode(),true);
+			VK.setTestMode(settings.getTestMode(),true);
 		if(settings.getConfirmCode()!=null)
 			VK.setCallbackConfirmationCode(settings.getConfirmCode());
 		if(!settings.getUseLongPoll()) {

@@ -14,11 +14,11 @@ import com.petya136900.rcebot.vk.VK;
 
 @SuppressWarnings("unused")
 public class TimetableServer {
-	private static HashMap<String,Semaphore> lockers = new HashMap<String,Semaphore>();
-	private static final HashMap<String,Boolean> days = new HashMap<String,Boolean>();
+	private static final HashMap<String,Semaphore> lockers = new HashMap<>();
+	private static final HashMap<String,Boolean> days = new HashMap<>();
 	
-	private String date;
-	private String groupName;
+	private final String date;
+	private final String groupName;
 	public TimetableServer(String date, String groupName) {
 		this.date=date;
 		this.groupName=groupName;
@@ -48,11 +48,8 @@ public class TimetableServer {
 		for (String ver : vers) {
 			// Check file_type from Mysql
 			// parse unparsed
-			Boolean isCalls=false;
-			if(ver.contains("call")) {
-				isCalls=true;
-			}
-			
+			boolean isCalls = ver.contains("call");
+
 			if(!isParsed(types,ver)) {
 				//PDFParser.parse(date,ver);
 				//System.out.println("Найдено непропарсенное расписание: ("+date+ver+".pdf)");
@@ -72,13 +69,15 @@ public class TimetableServer {
 					MySqlConnector.saveTimetable(t);
 				} catch(IOException ioe) {
 					ioe.printStackTrace();
-					class MN {}; throw new TimetableException(ExceptionCode.UNKWN_ERROR,Foo.getMethodName(MN.class),ioe.getLocalizedMessage(),ioe);
+					class MN {}
+					throw new TimetableException(ExceptionCode.UNKWN_ERROR,Foo.getMethodName(MN.class),ioe.getLocalizedMessage(),ioe);
 				} catch(Exception e) {
 					e.printStackTrace();
-					class MN {}; throw new TimetableException(ExceptionCode.PARSING_EXCEPTION,Foo.getMethodName(MN.class),e.getLocalizedMessage(),e);
+					class MN {}
+					throw new TimetableException(ExceptionCode.PARSING_EXCEPTION,Foo.getMethodName(MN.class),e.getLocalizedMessage(),e);
 				}
 			} else {
-				//System.out.println("Уже в БД: ("+date+ver+".pdf)");
+				//System.out.println("Already saved to DB: ("+date+ver+".pdf)");
 			}
 		}
 		
@@ -86,7 +85,7 @@ public class TimetableServer {
 	private boolean isParsed(FileType[] types, String ver) {
 		for(FileType type : types) {
 			if(type.getVer().equals(ver)) {
-				if(type.getParsed()==true) {
+				if(type.getParsed()) {
 					return true;
 				}
 			}
@@ -139,12 +138,13 @@ public class TimetableServer {
 							}
 							lockers.get(this.date).release();
 						}
-						class MN {}; throw new TimetableException(ExceptionCode.UNKWN_ERROR,Foo.getMethodName(MN.class),te.getLocalizedMessage(),te);
+						class MN {}
+						throw new TimetableException(ExceptionCode.UNKWN_ERROR,Foo.getMethodName(MN.class),te.getLocalizedMessage(),te);
 					}						
 					//vk.reply(threadName()+": завершил парсинг"+"("+this.date+")");
 				}
 			}
-			Timetable tt = null;
+			Timetable tt;
 			try {
 				tt = getFromDB(this.date,this.groupName);
 			} catch(TimetableException te) {
@@ -154,7 +154,8 @@ public class TimetableServer {
 					}
 					lockers.get(this.date).release();
 				}
-				class MN {}; throw new TimetableException(ExceptionCode.UNKWN_ERROR,Foo.getMethodName(MN.class),te.getLocalizedMessage(),te);
+				class MN {}
+				throw new TimetableException(ExceptionCode.UNKWN_ERROR,Foo.getMethodName(MN.class),te.getLocalizedMessage(),te);
 			}
 			//vk.reply(threadName()+": получил расписание"+"("+this.date+")");
 			//vk.reply(JsonParser.toJson(tt));
@@ -166,7 +167,8 @@ public class TimetableServer {
 			}			
 			return tt;
 		} catch (InterruptedException e) {
-			class MN {}; throw new TimetableException(ExceptionCode.UNKWN_ERROR,Foo.getMethodName(MN.class),e.getLocalizedMessage(),e);
+			class MN {}
+			throw new TimetableException(ExceptionCode.UNKWN_ERROR,Foo.getMethodName(MN.class),e.getLocalizedMessage(),e);
 		} 
 	}
 }

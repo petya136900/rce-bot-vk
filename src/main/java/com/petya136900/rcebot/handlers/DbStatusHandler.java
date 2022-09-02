@@ -1,7 +1,10 @@
-package com.petya136900.rcebot.lifecycle;
+package com.petya136900.rcebot.handlers;
 
 import com.petya136900.rcebot.db.MySqlConnector;
 import com.petya136900.rcebot.handlers.HostNameHandler;
+import com.petya136900.rcebot.lifecycle.HandlerInterface;
+import com.petya136900.rcebot.lifecycle.MainHandler;
+import com.petya136900.rcebot.lifecycle.NotifyLoop;
 import com.petya136900.rcebot.rce.timetable.TimetableException;
 import com.petya136900.rcebot.tools.RegexpTools;
 import com.petya136900.rcebot.vk.VK;

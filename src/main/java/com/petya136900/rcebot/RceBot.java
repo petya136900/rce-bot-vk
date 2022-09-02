@@ -40,7 +40,6 @@ public class RceBot {
 		VK.setTestMode(settings.getTestMode()); // Reply only to admin
 		Logger.setCheckSql(!settings.getTestMode());
 		Logger.setSendToVk(!settings.getTestMode());
-
 		if(!settings.getTestMode()) {
 			NotifyLoop nl = new NotifyLoop();
 			nl.setDaemon(false);

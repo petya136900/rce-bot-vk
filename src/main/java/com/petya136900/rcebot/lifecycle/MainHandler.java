@@ -40,7 +40,7 @@ public class MainHandler implements Runnable {
 								  "@ИНФО | Включен режим разработки\n"+
 								  "⌛Попробуйте сделать запрос позже";
 	public MainHandler(VK parsedMessage) {
-		Boolean isMention = Mentions.isMention(parsedMessage.getVK());
+		boolean isMention = Mentions.isMention(parsedMessage.getVK());
 		parsedMessage.setInternalMention(isMention);
 		this.parsedMessage=parsedMessage;
 	}

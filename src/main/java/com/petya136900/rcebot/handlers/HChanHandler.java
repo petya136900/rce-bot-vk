@@ -1,5 +1,8 @@
-package com.petya136900.rcebot.lifecycle;
+package com.petya136900.rcebot.handlers;
 
+import com.petya136900.rcebot.lifecycle.HandlerInterface;
+import com.petya136900.rcebot.other.hchan.HChanManga;
+import com.petya136900.rcebot.other.hchan.HChanParser;
 import com.petya136900.rcebot.tools.JsonParser;
 import com.petya136900.rcebot.tools.RegexpTools;
 import com.petya136900.rcebot.vk.VK;
