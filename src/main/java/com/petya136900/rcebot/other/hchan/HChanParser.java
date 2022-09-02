@@ -45,10 +45,10 @@ public class HChanParser {
         }
     }
     public HChanManga[] getNew() throws IOException, InterruptedException {
-        return getNew(null);
+        return getNew(0,null);
     }
-    public HChanManga[] getNew(Consumer<String> statusConsumer) throws IOException, InterruptedException {
-        return parseRows(getPage(HCHAN_SCHEME + HCHAN_URL + NEW), statusConsumer);
+    public HChanManga[] getNew(Integer offset,Consumer<String> statusConsumer) throws IOException, InterruptedException {
+        return parseRows(getPage(HCHAN_SCHEME + HCHAN_URL + NEW + "?offset="+offset), statusConsumer);
     }
     public HChanManga[] getByTags(String[] tags, Consumer<String> statusConsumer) throws IOException, InterruptedException {
         String tagsString = Arrays.stream(tags)

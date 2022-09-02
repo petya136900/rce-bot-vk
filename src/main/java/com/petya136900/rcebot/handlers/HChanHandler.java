@@ -189,7 +189,7 @@ public class HChanHandler implements HandlerInterface {
         AtomicReference<MessageSendResponse.MessageInfo> mi = new AtomicReference<>(vkContent.reply("Loading...",null,Keyboard.clear()));
         try {
             busy();
-            HChanManga[] mangas = new HChanParser().setCoverToAttachConverter(this::upload).getNew(status->
+            HChanManga[] mangas = new HChanParser().setCoverToAttachConverter(this::upload).getNew(offset,status->
                 mi.set(mi.get().editMessageOrDeleteAndReply(status))
             );
             if(mangas.length>0) {
