@@ -44,13 +44,13 @@ public class HChanParser {
             e.printStackTrace();
         }
     }
-    public HChanManga[] getNew() throws IOException {
+    public HChanManga[] getNew() throws IOException, InterruptedException {
         return getNew(null);
     }
-    public HChanManga[] getNew(Consumer<String> statusConsumer) throws IOException {
+    public HChanManga[] getNew(Consumer<String> statusConsumer) throws IOException, InterruptedException {
         return parseRows(getPage(HCHAN_SCHEME + HCHAN_URL + NEW), statusConsumer);
     }
-    public HChanManga[] getByTags(String[] tags, Consumer<String> statusConsumer) throws IOException {
+    public HChanManga[] getByTags(String[] tags, Consumer<String> statusConsumer) throws IOException, InterruptedException {
         String tagsString = Arrays.stream(tags)
                 .filter(tag->tag!=null&&tag.trim().length()>0)
                 .map(String::trim)
@@ -59,7 +59,7 @@ public class HChanParser {
             throw new IllegalArgumentException("Ошибка: тэги указаны некорректно");
         return parseRows(getPage(HCHAN_SCHEME + HCHAN_URL + TAGS + "/" + tagsString),statusConsumer);
     }
-    private HChanManga[] parseRows(Document page, Consumer<String> statusConsumer) throws IOException {
+    private HChanManga[] parseRows(Document page, Consumer<String> statusConsumer) throws IOException, InterruptedException {
         Elements content_rows = page.getElementsByClass("content_row");
         ArrayList<HChanManga> comics = new ArrayList<>();
         // TODO: foundTotal = content_rows.size();
@@ -70,7 +70,9 @@ public class HChanParser {
         }
         return comics.toArray(new HChanManga[comics.size()]);
     }
-    private HChanManga parseRow(Element content_row, Consumer<String> statusConsumer) throws IOException {
+    private HChanManga parseRow(Element content_row, Consumer<String> statusConsumer) throws IOException, InterruptedException {
+        if(Thread.currentThread().isInterrupted())
+            throw new InterruptedException();
         HChanManga comic = new HChanManga();
         Element manga_img = content_row.getElementsByClass("manga_images").get(0);
         if(manga_img!=null) {
@@ -78,11 +80,8 @@ public class HChanParser {
             // TODO: CHECK IF EXIST by link in DB
             HChanManga comicFromDb = MySqlConnector.getHChanByLink(comic.getLink());
             if(comicFromDb.existInDB()) {
-                System.out.println("Манга в БД");
                 fromDB++;
                 return comicFromDb;
-            } else {
-                System.out.println("Манги нет в БД");
             }
             String thumbUrlBlur = manga_img.getElementsByTag("img").get(0).absUrl("src");
             if(thumbUrlBlur.trim().trim().length()>0)

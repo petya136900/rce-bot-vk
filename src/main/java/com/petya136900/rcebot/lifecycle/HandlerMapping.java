@@ -27,7 +27,7 @@ public class HandlerMapping {
 		addHandler("(^|^( ))+(пар|расписани|замен)+([а-я]{1})+($|( ))+",new TimetableHandler()); // \s
 		addHandler("^(test|тест)$",new TestHandler());
 		addHandler("^(db+.?status)",new DbStatusHandler());
-		//addHandler("^(hchan)",new HChanHandler());
+		addHandler("^(hchan)",new HChanHandler());
 		addHandler("((транс|trans)+(([^a-zа-я])*)?)$",new TransHandler());
 		addHandler("((debug)+(([^a-zа-я])*)?)$",new DebugHandler());
 		addHandler("^(furry|фурри|anime|аниме)",new FurryHandler());
@@ -169,7 +169,7 @@ public class HandlerMapping {
 			}} catch (Exception e) { vkContent.reply("{L}Stage is null"); }
 		});
 		//////////////////////
-		//addPayloadHandler("^(hchan)",new HChanHandler());
+		addPayloadHandler("^(hchan)",new HChanHandler());
 		addPayloadHandler("^text",new PayloadTextHandler());
 		addPayloadHandler("^test_payload_handler",new InfoAboutClientHandler());
 		addPayloadHandler("^pairs",new TimetableHandler());
@@ -179,7 +179,7 @@ public class HandlerMapping {
 		addPayloadHandler("^cab_on_day",new CabOnDayHandler());
 		addPayloadHandler("^say",new SayHandler());
 		//
-		//addCallbackPayloadHandler("^(hchan)",new HChanHandler());
+		addCallbackPayloadHandler("^(hchan)",new HChanHandler());
 		addCallbackPayloadHandler("^callback1", new CallBack1Handler());
 	}	
 	public static void   addHandler(String regex, HandlerInterface handler) {

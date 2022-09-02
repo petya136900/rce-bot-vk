@@ -58,9 +58,11 @@ public class HChanSQLObject {
     }
     public HChanSQLObject(HChanManga comic) {
         this.link = comic.getLink();
-        if(comic.getAttachs()!=null)
-            if(comic.getAttachs().length>0)
-                this.attaches = JsonParser.toJson(comic.getAttachs());
+        if(comic.getAttachs()!=null) {
+            this.attaches = JsonParser.toJson(comic.getAttachs());
+        } else {
+            this.attaches = JsonParser.toJson(new String[]{});
+        }
         this.jsonData = JsonParser.toJson(new HChanManga()
                 .setCoverUrl(comic.getCoverUrl())
                 .setItemName(comic.getItemName())
@@ -68,6 +70,7 @@ public class HChanSQLObject {
                 .setItemLink(comic.getItemLink())
                 .setDescription(comic.getDescription())
                 .setPageUrls(comic.getPageUrls())
+                .setParsed(comic.isParsed())
                 .setCoverAttach(comic.getCoverAttach())
                 .setTitle(comic.getTitle())
                 .setReadLink(comic.getReadLink())

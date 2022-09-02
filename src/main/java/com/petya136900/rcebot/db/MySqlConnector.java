@@ -1676,9 +1676,7 @@ public class MySqlConnector {
 		try {
 			checkMySqlServer();
 			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SELECT * FROM hchan_table WHERE link='"+link+"'");) {
-				System.out.println("Query Chan: "+rs.getRs().getStatement().toString());
 				if(rs.next()) {
-					System.out.println("Found");
 					sqlObject = new HChanSQLObject(
 							rs.getLong("ID"),
 							rs.getString("link"),
@@ -1690,7 +1688,6 @@ public class MySqlConnector {
 					sqlObject.setExist(true);
 					return new HChanManga(sqlObject);
 				}
-				System.out.println("Not Found");
 			}
 		} catch(Exception sqle) {
 			sqle.printStackTrace();
@@ -1702,37 +1699,34 @@ public class MySqlConnector {
 		HChanSQLObject sqlObject = new HChanSQLObject(comic);
 		try {
 			checkMySqlServer();
-			System.out.println("Trying to save: "+JsonParser.toJson(comic));
 			try(ResultSetRaccoon rs = sqlExecuteQuery(conn,"SELECT * FROM hchan_table WHERE link='"+sqlObject.getLink()+"'");) {
-				System.out.println("Trying to save: 2");
 				if(rs.next()) {
-					System.out.println("Trying to save: 3");
 					if(updateIfExist) {
 						sqlExecuteUpdate(conn, "UPDATE `hchan_table` SET "
-								+ "`parsed` = '" + sqlObject.isParsed() + "' ,"
-								+ "`attachs` = '" + sqlObject.getAttaches() + "' ,"
-								+ "`jsonData` = '" + sqlObject.getJsonData() + "' ,"
-								+ "`tags` = '" + sqlObject.getTags() + "' "
+								+ "`parsed` = '" + (sqlObject.isParsed()?1:0) + "' ,"
+								+ "`attachs` = '" + fixBS(sqlObject.getAttaches()) + "' ,"
+								+ "`jsonData` = '" + fixBS(sqlObject.getJsonData()) + "' ,"
+								+ "`tags` = '" + fixBS(sqlObject.getTags()) + "' "
 								+ "WHERE link = '" + sqlObject.getLink() + "';");
 					}
 				} else {
-					System.out.println("Trying to save: 4");
 					sqlExecuteUpdate(conn,"INSERT INTO `"+DB_NAME+"`.`hchan_table` (`link`,`parsed`,`attachs`,`jsonData`,`tags`) "
 							+ "VALUES ('"+
 								sqlObject.getLink() + "','" +
-								sqlObject.isParsed() + "','" +
-								sqlObject.getAttaches() + "','" +
-								sqlObject.getJsonData() + "','" +
-								sqlObject.getTags()
+								(sqlObject.isParsed()?1:0) + "','" +
+							fixBS(sqlObject.getAttaches()) + "','" +
+							fixBS(sqlObject.getJsonData()) + "','" +
+							fixBS(sqlObject.getTags())
 							+"')");
-					System.out.println("Trying to save: 5");
 				}
 			}
 		} catch(SQLException sqle) {
-			System.out.println("Trying to save: 10");
 			sqle.printStackTrace();
 			disc();
 		}
+	}
+	public static String fixBS(String s) {
+		return s.replaceAll("(\\\\)","\\\\\\\\");
 	}
 	public static void stop() {
 		disc();
