@@ -49,7 +49,7 @@ public class HChanHandler implements HandlerInterface {
             return;
         }
         if(payload==null) {
-            if(RegexpTools.checkRegexp("exit|выход|назад|отмена",message)) {
+            if(RegexpTools.checkRegexp("exit|выход|отмена",message)) {
                 stopLoading();
                 bye();
                 return;
@@ -102,6 +102,21 @@ public class HChanHandler implements HandlerInterface {
                 bye();
                 break;
             default:
+                if(message!=null&&message.trim().length()>0) {
+                    message = message.toLowerCase().trim();
+                    if(results!=null) {
+                        if (message.contains("вперед")) {
+                            scrollResult(resultOffset + 1, false);
+                        } else if (message.contains("назад")) {
+                            scrollResult(resultOffset - 1, false);
+                        } else if (message.contains("смотреть")) {
+                            watchResult(resultOffset, true);
+                        } else if (message.contains("меню")) {
+                            mainMenu("Главное меню");
+                        }
+                        return;
+                    }
+                }
                 unknownCommand();
                 break;
         }
@@ -200,8 +215,8 @@ public class HChanHandler implements HandlerInterface {
                     attachs = new ArrayList<>();
                 }
             }
-            if(attachs.size()>0)
-                vkContent.reply("",getArray(attachs));
+            if(attachs.size()>0) {
+                vkContent.reply("",getArray(attachs)); }
             scrollResult(offset,true);
         } catch (InterruptedException e) {
             mainMenu("Loading interrupted");
@@ -264,7 +279,7 @@ public class HChanHandler implements HandlerInterface {
             if(mangas.length>0) {
                 lastSearchOffset = offset;
                 results = mangas;
-                scrollResult(resultOffset,false);
+                scrollResult(0,false);
             } else mainMenu(isNew?"Нового нет..":"Больше результатов по этим тэгам нет");
         } catch (InterruptedException e) {
             mainMenu("Loading interrupted");
@@ -292,10 +307,11 @@ public class HChanHandler implements HandlerInterface {
             mainMenu("Ошибка, индекс за пределами результатов");
             return;
         }
+        this.resultOffset=resultOffset;
         //markCBRead("Result "+(resultOffset+1)+" of "+results.length+"\n"+results[resultOffset].getTitle());
         String cover = results[resultOffset].getCoverAttach();
         vkContent.reply(!silence?("#"+(resultOffset+1)+" | "+results[resultOffset].getTitle()+(cover==null?"\n[Нет обложки]":"")+"\n"
-                +desc(results[resultOffset])):"",cover!=null?new String[]{cover}:null,
+                +desc(results[resultOffset])):results[resultOffset].getTitle(),!silence?(cover!=null?new String[]{cover}:null):null,
             new Keyboard(
                 new KeyboardLine(
                         new Button(Button.Type.CALLBACK,"Смотреть",Button.COLOR_POSITIVE).setHandler("hchan").setStage("watch").setData(String.valueOf(resultOffset))

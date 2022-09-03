@@ -155,6 +155,7 @@ public class HChanParser {
     private static Document getPage(String url) throws IOException {
         String append = url.contains("?")?"&":"?";
         Connection con = Jsoup.connect(url+append+"development_access=true");
+        con.timeout(180000);
         con.header("Cookie","dle_restore_pass22=1");
         return con.get();
     }
