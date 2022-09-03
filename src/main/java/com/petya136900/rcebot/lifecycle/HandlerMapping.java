@@ -19,7 +19,7 @@ public class HandlerMapping {
 	private static final LinkedHashMap<Pattern, HandlerInterface> callbackPayloadHandlers = new LinkedHashMap<>();
 	public static void   registerBasicHandlers() {
 		addHandler("^(#|!)",new NothingHandler());
-		addHandler("^(genkey|клав|keyboard)+(.)*?($| )", new CreateKeyboardHandler());
+		addHandler("^(genkey|клав|keyboard)+(.)*?($| |\n)", new CreateKeyboardHandler());
 		addHandler("(multi)",new MultiHandler());
 		addHandler("((вкл)+(.)+?ув.д.)",new NotifyHandlerHelp());
 		addHandler("((выкл|откл)+(.)+?ув.д.)",new NotifyHandlerHelp2());	

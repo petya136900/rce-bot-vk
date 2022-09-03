@@ -25,6 +25,7 @@ public class HChanParser {
     private static final String TAGS = "tags";
     private int foundTotal=0;
     private int parsed=0;
+    private int failed=0;
     private int imagesTotal=0;
     private int imagesUpload=0;
     private int fromDB=0;
@@ -50,23 +51,31 @@ public class HChanParser {
     public HChanManga[] getNew(Integer offset,Consumer<String> statusConsumer) throws IOException, InterruptedException {
         return parseRows(getPage(HCHAN_SCHEME + HCHAN_URL + NEW + "?offset="+offset), statusConsumer);
     }
-    public HChanManga[] getByTags(String[] tags, Consumer<String> statusConsumer) throws IOException, InterruptedException {
+    public HChanManga[] getByTags(Integer offset, String tagsByPlus, Consumer<String> statusConsumer) throws IOException, InterruptedException {
+        if(tagsByPlus.length()<1)
+            throw new IllegalArgumentException("Ошибка: тэги указаны некорректно");
+        return parseRows(getPage(HCHAN_SCHEME + HCHAN_URL + TAGS + "/" + tagsByPlus+ "?offset="+offset),statusConsumer);
+    }
+    public HChanManga[] getByTags(Integer offset, String[] tags, Consumer<String> statusConsumer) throws IOException, InterruptedException {
         String tagsString = Arrays.stream(tags)
                 .filter(tag->tag!=null&&tag.trim().length()>0)
                 .map(String::trim)
                 .collect(Collectors.joining("+"));
         if(tagsString.length()<1)
             throw new IllegalArgumentException("Ошибка: тэги указаны некорректно");
-        return parseRows(getPage(HCHAN_SCHEME + HCHAN_URL + TAGS + "/" + tagsString),statusConsumer);
+        return getByTags(offset,tagsString, statusConsumer);
     }
     private HChanManga[] parseRows(Document page, Consumer<String> statusConsumer) throws IOException, InterruptedException {
         Elements content_rows = page.getElementsByClass("content_row");
         ArrayList<HChanManga> comics = new ArrayList<>();
-        // TODO: foundTotal = content_rows.size();
         for(Element content_row: content_rows) {
-            comics.add(parseRow(content_row, statusConsumer));
-            parsed++;
-            statusConsumer.accept(("Parsed: "+parsed+"/"+content_rows.size())+(fromDB>0?" ("+fromDB+" from DB)":""));
+            try {
+                comics.add(parseRow(content_row, statusConsumer));
+                parsed++;
+            } catch (IOException e) {
+                failed++;
+            }
+            statusConsumer.accept(("Parsed: "+parsed+"/"+content_rows.size())+(fromDB>0?" ("+fromDB+" from DB)":"")+(failed>0?" ("+failed+" failed)":""));
         }
         return comics.toArray(new HChanManga[comics.size()]);
     }
@@ -77,7 +86,6 @@ public class HChanParser {
         Element manga_img = content_row.getElementsByClass("manga_images").get(0);
         if(manga_img!=null) {
             comic.setLink(manga_img.getElementsByTag("a").get(0).absUrl("href").trim());
-            // TODO: CHECK IF EXIST by link in DB
             HChanManga comicFromDb = MySqlConnector.getHChanByLink(comic.getLink());
             if(comicFromDb.existInDB()) {
                 fromDB++;
