@@ -113,6 +113,8 @@ public class HChanHandler implements HandlerInterface {
                             watchResult(resultOffset, true);
                         } else if (message.contains("меню")) {
                             mainMenu("Главное меню");
+                        } else {
+                            unknownCommand();
                         }
                         return;
                     }
@@ -170,7 +172,7 @@ public class HChanHandler implements HandlerInterface {
             vkContent.reply(String.format("В этом комиксе много страниц[%s], и он ещё не загружен, желаете подождать?",result.getPageUrls().length),null,
                     new Keyboard(
                             new KeyboardLine(
-                                    new Button(Button.Type.TEXT,"Назад",Button.COLOR_NEGATIVE)
+                                    new Button(Button.Type.TEXT,"Нaзaд",Button.COLOR_NEGATIVE)
                                             .setHandler("hchan").setStage("scroll2").setData(String.valueOf(offset)),
                                     new Button(Button.Type.TEXT,"Загрузить всё равно",Button.COLOR_POSITIVE)
                                             .setHandler("hchan").setStage("watch_nocheck").setData(String.valueOf(offset))
@@ -270,6 +272,7 @@ public class HChanHandler implements HandlerInterface {
                         mi.set(mi.get().editMessageOrDeleteAndReply(status))
                 );
             } else {
+                tagsByComma = tagsByComma.toLowerCase();
                 isNew=false;
                 lastSearchTagsByComma = tagsByComma;
                 mangas = new HChanParser().setCoverToAttachConverter(this::upload).getByTags(offset, tagsByComma.replaceAll(", ","+"),status ->
