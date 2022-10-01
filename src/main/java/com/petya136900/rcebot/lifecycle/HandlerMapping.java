@@ -39,7 +39,7 @@ public class HandlerMapping {
 		addHandler("(^(spam))",new SpamHandler());
 		addHandler("(^спутник|geo)",new GeoHandler());		
 		addHandler("(ув.домлен.)",new NotifyHandler());
-		addHandler("^(help|помощь|команды|справка)",new FaqHandler());
+		addHandler("^(help|помощь|команды|справка|faq)",new FaqHandler());
 		addHandler("(^(звонк))", new CallsHandler());
 		addHandler("^(вход)$", new EnterHandler());
 		addHandler("^(каб|кабинет|палат)", new CabinetHandler());

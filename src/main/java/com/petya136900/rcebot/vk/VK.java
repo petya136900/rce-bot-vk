@@ -48,6 +48,7 @@ public class VK {
 	private static final Integer SPAM_DELAY_MS=300;
 	private static final String VK_SCHEME = "https://";
 	private static final String VK_METHOD_DOMAIN = "api.vk.com/method/";
+	private static final Integer ATTACHMENTS_LIMIT = 10;
 	public void setInternalMention(boolean b) {
 		if(vkJson!=null)
 			if(vkJson.getMessage()!=null)
@@ -149,6 +150,7 @@ public class VK {
 			try {
 				vkJson=JsonParser.fromJson(jsonRequest, VKJson.class);
 			} catch(Exception e) {
+				// e.printStackTrace();
 				vkJson=JsonParser.fromJson(jsonRequest, VKJsonCB.class).toVKJson();
 			}
 		}
@@ -581,8 +583,18 @@ public class VK {
 	public static MessageInfo sendMessage(Integer peer_id, String message, String[] attachs, Keyboard keyboard) {
 		String attachsString;
 		String keyboardString;
+		String[] newArr = null;
+		String[] trimmedArr = null;
 		if(attachs!=null) {
-			attachsString = String.join(",", attachs);
+			if(attachs.length>10) {
+				newArr = new String[attachs.length-ATTACHMENTS_LIMIT];
+				trimmedArr = new String[ATTACHMENTS_LIMIT];
+				System.arraycopy(attachs,ATTACHMENTS_LIMIT, newArr, 0, ATTACHMENTS_LIMIT);
+				System.arraycopy(attachs,0, trimmedArr, 0, ATTACHMENTS_LIMIT);
+			} else {
+				trimmedArr = attachs;
+			}
+			attachsString = String.join(",", trimmedArr);
 		} else {
 			attachsString=null;
 		}
@@ -615,6 +627,9 @@ public class VK {
 			MessageSendResponse msResponse = JsonParser.fromJson(response, MessageSendResponse.class);
 			if(msResponse.getError()==null) {
 				success=true;
+				if(newArr!=null) {
+					sendMessage(peer_id,"...",newArr);
+				}
 				return msResponse.getResponse()[0];
 			} else {
 				if(msResponse.getError().getError_code()!=null) {

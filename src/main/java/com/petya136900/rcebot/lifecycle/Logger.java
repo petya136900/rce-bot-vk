@@ -6,6 +6,7 @@ import com.petya136900.rcebot.vk.VK;
 import com.petya136900.rcebot.vk.structures.*;
 import org.fusesource.jansi.AnsiConsole;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
@@ -124,6 +125,12 @@ public class Logger extends Thread {
 					+ "stage: "+stage);
 		}
 	}
+	private ArrayList<String> attachs;
+	private void addAttach(String attach) {
+		if(attachs==null)
+			attachs = new ArrayList<>();
+		attachs.add(attach);
+	}
 	synchronized private void localPrintNewMessage(VKMessage message, StringBuilder sb) {
 		Integer peer_id=message.getPeer_id();
 		String groupName=null;
@@ -175,13 +182,12 @@ public class Logger extends Thread {
 			);
 		//System.out.println("Message ID: "+message.getId());
 		sb.append(
-					convertDate(message.getDate())+"\n"+
-					"peer_id: "+message.getPeer_id()+"("+groupName+")" +
-					getConvTitle(conversations)+"\n"+
-					"from_id: vk.com/"+(message.getFrom_id()>-1?"id":"club")+Math.abs(message.getFrom_id())+"\n"+
-					"message_id: "+message.getConversation_message_id()+"\n"+
-					"text: "+message.getText().replace("@all","@\\all")+"\n"
-				);
+				convertDate(message.getDate())).append("\n")
+				.append("peer_id: ").append(message.getPeer_id()).append("(").append(groupName).append(")")
+				.append(getConvTitle(conversations)).append("\n")
+				.append("from_id: vk.com/").append(message.getFrom_id() > -1 ? "id" : "club").append(Math.abs(message.getFrom_id())).append("\n")
+				.append("message_id: ").append(message.getConversation_message_id()).append("\n")
+				.append("text: ").append(message.getText().replace("@all", "@\\all")).append("\n");
 		for(VKAttachment attachment : message.getAttachments()) {
 			//String artist="";
 			String transcript="";
@@ -198,8 +204,10 @@ public class Logger extends Thread {
 							.a(" |")							
 							.fgBrightBlue().a("URL: ")
 							.fgBrightCyan().a(attachment.getPhoto().getMaxSize().getUrl()).fg(DEFAULT));
-					sb.append(" Картинка: "+((text = attachment.getPhoto().getText()).length()>0?("("+text+")"):"")+"\n"
-							+attachment.getPhoto().getMaxSize().getUrl()+"\n");
+					sb.append(" Картинка: ")
+							.append((text = attachment.getPhoto().getText()).length() > 0 ? ("(" + text + ")") : "")
+							.append("\n").append(attachment.getPhoto().getMaxSize().getUrl()).append("\n");
+					addAttach(attachment.getPhoto().toStringAttachment());
 				break;
 				case("video"):
 					desc = ((desc = attachment.getVideo().getDescription())!=null?(desc.length()>0?(" - "+desc):""):"");
@@ -210,9 +218,9 @@ public class Logger extends Thread {
 									desc+")").fg(DEFAULT)
 							.a(" |")
 							.fgBrightCyan().a("URL: "+attachment.getVideo().getPlayer()).fg(DEFAULT));
-					sb.append(" Видео: "+"("+attachment.getVideo().getTitle()+
-							desc+")\n"+
-							attachment.getVideo().getPlayer());
+					sb.append(" Видео: " + "(").append(attachment.getVideo().getTitle())
+							.append(desc).append(")\n").append(attachment.getVideo().getPlayer());
+					addAttach(attachment.getVideo().toStringAttachment());
 				break;
 				case("doc"):
 					System.out.println(ansi()
@@ -223,8 +231,10 @@ public class Logger extends Thread {
 							.a(" |")							
 							.fgBrightBlue().a("URL: ")
 							.fgBrightCyan().a(attachment.getDoc().getUrl()).fg(DEFAULT));
-					sb.append(" Документ: "+((title = attachment.getDoc().getTitle()).length()>0?("("+title+")"):"")+"\n"
-							+attachment.getDoc().getUrl());
+					sb.append(" Документ: ")
+							.append((title = attachment.getDoc().getTitle()).length() > 0 ? ("(" + title + ")") : "")
+							.append("\n").append(attachment.getDoc().getUrl());
+					addAttach(attachment.getDoc().toStringAttachment());
 				break;
 				case("audio"):
 					System.out.println(ansi()
@@ -232,7 +242,9 @@ public class Logger extends Thread {
 							.a(" |")
 							.fgBrightYellow().a(
 									(attachment.getAudio().getArtist()+" - "+attachment.getAudio().getTitle())).fg(DEFAULT));		
-					sb.append(" Аудио: "+attachment.getAudio().getArtist()+" - "+attachment.getAudio().getTitle()+"\n");
+					sb.append(" Аудио: ").append(attachment.getAudio().getArtist())
+							.append(" - ").append(attachment.getAudio().getTitle()).append("\n");
+					addAttach(attachment.getAudio().toStringAttachment());
 				break;
 				case("graffiti"):
 					System.out.println(ansi()
@@ -240,23 +252,46 @@ public class Logger extends Thread {
 							.a(" |")						
 							.fgBrightBlue().a("URL: ")
 							.fgBrightCyan().a(attachment.getGraffiti().getUrl()+"&access_key="+attachment.getGraffiti().getAccess_key()).fg(DEFAULT));
-					sb.append(" Граффити: "+attachment.getGraffiti().getUrl()+"&access_key="+attachment.getGraffiti().getAccess_key()+"\n");
-				break;		
+					sb.append(" Граффити: ")
+							.append(attachment.getGraffiti().getUrl())
+							.append("&access_key=").append(attachment.getGraffiti().getAccess_key()).append("\n");
+				break;
 				case("sticker"):
 					System.out.println(ansi()
 							.fgBrightMagenta().a("\tСтикер:").fg(DEFAULT)
-							.a(" |")						
+							.a(" |")
 							.fgBrightBlue().a("URL: ")
-							.fgBrightCyan().a(attachment.getSticker().getMaxImageWithBackground().getUrl()).fg(DEFAULT));		
-					sb.append(" Стикер: "+attachment.getSticker().getMaxImageWithBackground().getUrl()+"\n");
-				break;	
+							.fgBrightCyan().a(attachment.getSticker().getMaxImageWithBackground().getUrl()).fg(DEFAULT));
+					sb.append(" Стикер: ").append(attachment.getSticker().getMaxImageWithBackground().getUrl())
+							.append("\n");
+				break;
+				case("wall"):
+					VKAttachment.Wall wall = attachment.getWall();
+					String postUrl = "https://vk.com/wall"+wall.getFrom_id()+"_"+wall.getId();
+					String name = wall.getFrom().getName()!=null?
+							wall.getFrom().getName()+" ["+wall.getFrom().getScreen_name()+", "+wall.getFrom_id()+"]":
+							wall.getFrom().getFirst_name()+" "+wall.getFrom().getLast_name()+" ["+wall.getFrom_id()+"]";
+					System.out.println(ansi()
+							.fgBrightMagenta().a("\tЗапись ["+postUrl+"]:").fg(DEFAULT)
+							.a(" |")
+							.fgBrightBlue().a("From: ")
+							.fgBrightCyan().a(name).fg(DEFAULT)
+							.a(" |")
+							.fgBrightBlue().a("Text: "+wall.getText()).fg(DEFAULT));
+					sb.append("Запись: ").append(postUrl).append("\n");
+					sb.append("Автор: ").append(name).append("\n");
+					if(wall.getText()!=null&&wall.getText().trim().length()>0) {
+						sb.append("Текст: ").append(wall.getText()).append("\n");
+					}
+					addAttach(attachment.getWall().toStringAttachment());
+					break;
 				case("audio_message"):
 					System.out.println(ansi()
 							.fgBrightMagenta().a("\tГолосовое сообщение:").fg(DEFAULT)
 							.a(" |")						
 							.fgBrightBlue().a("URL: ")
 							.fgBrightCyan().a(attachment.getAudio_message().getLink_mp3()).fg(DEFAULT));
-					sb.append(" Голосовое сообщение: \n"+attachment.getAudio_message().getLink_mp3()+"\n");
+					sb.append(" Голосовое сообщение: \n").append(attachment.getAudio_message().getLink_mp3()).append("\n");
 				if(attachment.getAudio_message().getDuration()<29) {
 					if(attachment.getAudio_message().getTranscript_state()!=null) {
 						System.out.print(ansi()
@@ -265,7 +300,7 @@ public class Logger extends Thread {
 								.fgBrightBlue().a("Текст: ")
 								//.fgBrightCyan().a(vk.readTranscriptAudio(peer_id)).fg(DEFAULT));
 								.fgBrightCyan().a(("("+attachment.getAudio_message().getTranscript_state()+")")));
-						sb.append("Голосовое сообщение(Текст): "+("("+attachment.getAudio_message().getTranscript_state()+"): "));
+						sb.append("Голосовое сообщение(Текст): ").append("(").append(attachment.getAudio_message().getTranscript_state()).append("): ");
 						System.out.println(ansi().a(((transcript=attachment.getAudio_message().getTranscript()))!=null?transcript:"").fgDefault());
 						sb.append(((transcript=attachment.getAudio_message().getTranscript()))!=null?transcript:"");
 						sb.append("\n");
@@ -290,11 +325,12 @@ public class Logger extends Thread {
 		}
 		if(rootQ) {
 			if(getSendToVk()) {
-				VK.sendMessage(logsPeerID, sb.toString());
+				String[] attachsArray = attachs==null?null:
+						attachs.toArray(new String[attachs.size()]);
+				VK.sendMessage(logsPeerID, sb.toString(), attachsArray);
 			}
 		}
 	}
-
 	private String getConvTitle(Conversations conversations) {
 		if(conversations==null||conversations.isEmpty())
 			return "";
@@ -304,9 +340,8 @@ public class Logger extends Thread {
 			return "[failed]";
 		}
 	}
-
 	private String convertDate(Long timeStamp) {
-		return "["+new SimpleDateFormat("dd.MM HH:mm:ss").format(new Date((long)timeStamp*1000))+"]";
+		return "["+new SimpleDateFormat("dd.MM HH:mm:ss").format(new Date(timeStamp *1000))+"]";
 	}
 	public  static void printNewMessage(VK vk) {
 		new Thread(new Logger(LOGTYPE.NEW_MESSAGE,vk)).start();
