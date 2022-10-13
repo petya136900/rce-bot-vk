@@ -1,6 +1,7 @@
 package com.petya136900.rcebot.web;
 
 
+import com.petya136900.rcebot.tools.Properties;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ import com.petya136900.rcebot.tools.JsonParser;
 
 @RestController
 public class WebController {
-	private static final String PASSWORD="rke136900";
+	private static final String PASSWORD=Properties.getProperty("WEB_ADMIN_PASSWORD");;
 	private static String groupsAllHash=null;
 	private static MainShelude[] mains=null;
 	

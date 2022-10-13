@@ -1,0 +1,64 @@
+body{
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c5b6e', endColorstr='#1c3b47', GradientType=1 );
+        }
+        .containerSld{
+            width: 80px;
+            height: 32px;
+            background: rgba(255,255,255,.4);
+            border: 2px solid #fff;
+            border-radius: 18px;
+            position: relative;
+			
+			display: inline-block;
+        }
+        .item{
+            display: block;
+            height: 26px;
+            width: 26px;
+            border-radius: 15px;
+            background: cornflowerblue;
+            position: absolute;
+            top: 1px;
+            left: 3px;
+            transition: left .5s ease-out;
+        }
+        @keyframes move{
+             0% {
+                 width:20%;
+                 height:45%;
+                 top:3px;
+             }
+             40% {
+                 width:15%;
+                 height:30%;
+                 top:10px;
+             }
+             100% {
+                 width:25%;
+                 height:45%;
+                 top:3px;
+             }
+         }
+        @keyframes moveL{
+            0% {
+                width: 20%;
+                height:45%;
+                top:3px;
+            }
+            40% {
+                width: 15%;
+                height:30%;
+                top:10px;
+            }
+            100% {
+                width:25%;
+                height:45%;
+                top:3px;
+            }
+        }

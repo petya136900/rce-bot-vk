@@ -1,0 +1,543 @@
+		.varName {
+			margin-right: 5px;
+			color: blue
+		}
+		.teacher {
+			margin: auto;
+			width: 50%;
+		}
+		.teacherP {
+			margin: 13px 0px 0px 0px;
+			font-size: 20px;
+			border-style: outset;
+			border-width: 2px;
+			background-color: #dad4d4;
+		}
+		p.teacherP:hover {
+			color: green;
+			background-color:#c2d0dc;
+		}
+		#notes {
+			z-index: 40;	
+			font-size: large;
+		}
+		#notes, .pust {
+			opacity: 0.85;
+			width: auto;
+			right: 10px;	
+		}
+		#notes .note-item[data-type="warn"] {
+			color: darkblue;
+		}
+		.messagebox_overlay,.nsel,.teacherP,.ButtonDrive,#unkPairs,.partPanel,#onLoadAnim,.centerInfoWrapper{				
+			-ms-user-select: none;
+			-moz-user-select: none;
+			-khtml-user-select: none;
+			-webkit-user-select: none;				
+		}
+		.buttonPanel:hover {
+			background-color: cornflowerblue;
+				color: aliceblue;
+		}
+		.nsel {
+			background-color: #b8bfff;
+		}
+		.varType {
+			margin-right: 5px;
+			color: crimson;
+		}
+		.closeSettings {
+			position: absolute;
+			color: red;
+			font-weight: 900;
+			right: 10px;
+			font-size: larger;
+		}
+		.saveSettings, .deleteTeachers {
+			position: absolute;
+			bottom: 5px;
+			right: 31%;
+			color: green;
+			font-size: 23px;
+			border: solid green 2px;
+			border-radius: 10px;
+			margin-right: 10px;
+		}
+		.pairsPanel {
+			text-align: right;
+		}
+		#unkLabel {
+			font-size: 26px;
+			margin-bottom: 6px;
+		}
+		#unkDiv {
+			margin-bottom: 15px;
+		}
+		#knPairs {
+			margin-bottom: 20px;
+		}
+		#phio {
+			top: 8px;
+			position: relative;	
+		}
+		.unkPair, .knPair {
+			width: fit-content;
+			min-width: 300px;
+			margin: auto;
+			border-style: solid;
+			border-width: 1px;
+			margin-bottom: 5px;
+			text-align: left;
+			padding: 1px 6px 3px 16px;
+			background-color: steelblue;
+			color: aliceblue;
+			font-size: 18px;
+			font-weight: 300;
+		}
+		.unkPair:hover {
+			background-color: aliceblue;
+			color: steelblue;
+		}
+		.knPair:hover {
+			background-color: aliceblue;
+			color: steelblue;
+		}
+		.partPanel {
+			padding-bottom: 10px;
+			margin-top: 15px;
+			margin-right: 20px;
+		}
+		#teacherIdInput, #pairIdInput {
+			background-color: #b9b7b7;}
+		#teacherShowWindow, #pairShowWindow{
+			display: none;
+			font-size: 20px;
+		}
+		#fullNameInput {
+			font-size: 18px;
+		}
+		span.varName {
+			margin: 0;
+		}
+		.deleteTeachers {
+			color: red;
+			right: 51%;
+		}
+		.cancelSettings {
+			position: absolute;
+			bottom: 5px;
+			left: 68%;
+			color: red;
+			font-size: 23px;
+			border: solid red 2px;
+			border-radius: 10px;
+		}
+		.settingsH {
+			text-align: center;
+			display: block;
+			font-size: 25px;
+		}	
+		.centerInfoWrapper {
+			position:fixed;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			top:0px;
+			left:0px;
+			width:100vw;
+			height:100vh;
+			z-index: 39;
+		}
+		#botSettings, #pairSettings {
+			min-width: 490px;
+			min-height: 85px;				
+			top: 25%;
+			border-color: black;
+			border-style: solid;
+			position: fixed;
+			background: white;
+			z-index: 10;
+			opacity: 0.85;
+			max-width: max-content;
+			padding: 5px 20px 30px;
+			border-radius: 10px;
+			display: none;
+			border-width: 2px;
+		}
+		#addSettings {
+			padding-right: 26px;
+			color: darkblue;
+		}
+		#settingsPanel {
+			display:none;
+		}
+		#onLoadAnim {
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			z-index: 44;			
+		}
+		a, a:link{cursor:url(../assets/images/cursor/Raccoon.cur), default;}
+		a:hover{color:aqua;}
+		a.button { color: black; }
+		@font-face{font-family:Pompadur;src:local(pompadur),url(../assets/fonts/font.ttf);}h1,.input{font-family:Pompadur,'Comic Sans MS',cursive;}
+		@font-face{font-family:Bazy;src:local(bazy),url(../assets/fonts/bazy.ttf);}	
+		h1{color:dodgerblue;}
+		body{overflow:hidden;}		
+		body {
+			color: #42648b;
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			overflow: auto;	
+		}
+		#all {
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			overflow: auto;
+		}
+		#star {
+			position: fixed;
+		}
+		body {
+			text-shadow:none;
+		}			
+		#logo {
+			position:absolute;
+			margin:0px;
+			top:3px;
+			right:30px;
+		}
+		.input {
+			padding-top: 15px;
+			display: inline-block;
+			font-size: 50px;
+		}
+		.center {
+			position: relative;
+			top: 50%;
+			left: 30%;
+			transform: translate(-50%, -50%);
+			margin-top: 30px;
+		}
+		#inputTeacherName {
+			font-size: 25px;
+			margin: 10px 0px 0px 10px;
+		}
+		.red {
+			color: red;
+		}
+		#Error {
+			font-size: 30px;
+		}
+		.green {
+			color: green;
+		}
+		.yellow {
+			color: yellow;
+		}
+		#programmInfo {
+			padding-left: 7%;
+			margin: 0px;
+		}
+			
+		div[style='background-image: url("https://sun1-25.userapi.com/s/v1/ig2/i3r3dlj3omSArnTlaqF3f6BPFHt6T5Cj96zuwxsanYQWRUEN4x1zm6Sk6C-udUduC5HXW1qTtzVwSPUKG8mWVjuX.jpg?size=200x200&quality=96&crop=261,153,356,356&ava=1");'] {
+			border-style: solid;
+			border-color: gold;
+			border-width: 2px;
+			opacity: 1;
+		}
+		#profile_avatar{
+			opacity: 0.9;
+		}
+		#ava {
+			border-radius: 100%;
+			border-style: solid;
+			border-color: white;
+			border-width: 1px;
+		}
+		#nameS {
+			color: #2a5885;
+			font-size:22px;
+		}
+		#footer_wrap {
+			
+		}
+		#me {
+		 left:0px;
+		 top:0px;
+		 border-width: 1px;
+		}	
+		.mylist_top {
+			padding-right: 100%;
+		}
+		a{
+			color: #2a5885;
+		}
+		a:hover {
+			cursor:url(../assets/images/cursor/Raccoon.cur),pointer;
+			color: lightsteelblue;
+		}
+		#left_menu0 ul a:hover {
+			background:lightblue;
+			color: black;
+			opacity: 0.5;
+		}
+		li{
+			width:177px;
+		}
+		.post_img {
+			opacity: 0.5;
+		}
+		.post{	
+			padding: 15px 0px 15px 0px;
+		}
+		.post_4 h4, .post_6 h4, .post_info h4 {
+			color: green;
+		}
+		.post_5 h4, .post_2 h4 {
+			color: red;
+		}
+		.post__group_info h4 {
+			color: yellow;
+		}
+		.dev_home_wrap {
+			padding-bottom: 25px;
+		}
+		body{cursor:url(../assets/images/cursor/cursor.cur),default}
+		.line{
+			border-style: solid;
+			border-color:white;
+			border-width:1px 0px 0px 0px;
+			margin: 10px 2px 0px 12px;
+		}	
+		deb {
+			color: yellow;
+		}
+		fld {
+			color: darkgoldenrod;
+		}
+		inf {
+			color: aqua;
+		}
+		ldt {
+			color: lightcoral;
+		}
+		nw {
+			color: green;
+		}
+		.weekDay {
+			font-size: 45px;
+			display: block;
+			text-align:center;
+			color: lightcoral;
+		}
+		.partWeek {
+			margin:0px;
+		}
+		.input {
+			width: 100%;
+		}		
+		#secDiv {
+			margin: auto;
+			width: fit-content;
+		}
+		.group {
+			display: inline-block;
+			margin: 10px;
+			border-style: solid;
+			border-with: 1px;
+			border-radius: 10px;
+			padding: 10px;
+		}
+		.groupField {
+			left: 5px;
+			position: relative;
+			margin-bottom: 5px;
+		}
+		.kabField {
+			left: 40px;
+			position: relative;
+		}
+		#ButtonBackPage {
+			position: relative;
+			top: 10px;
+			left: 10px;
+			padding: 5px;
+			border-radius: 5px;
+			border-style: solid;
+		}
+		#ButtonBackPage:hover {
+			background: unset;
+		}
+		#findGroup {
+			display: inline-block;
+			position: relative;
+			left: 437px;
+			font-size: 30px;
+			font-family:Pompadur;src:local(pompadur),url(../assets/fonts/font.ttf);
+			color: #42648b;
+			top: -8px;
+			border-radius: 9px;
+		}
+		#findGroup:hover {
+			color: green;
+			background: unset;
+		}		
+		body{ 
+			backgro: white;
+		}
+		#loadingText {
+			color: red;
+		}
+		#mainCenter {
+			text-align: center;
+		}
+		.right {
+			position: relative;
+			left: 51%;
+		}
+		.green {
+			color: green;
+		}
+		.red {
+			color: red;
+		}
+		#panel {
+			text-align: right;
+			font-size: 17px;
+		}
+		.tip {
+			margin: 5px 0px 0px 0px;
+		}
+		#sumButton {
+			border-radius: 5px;
+		}
+		.firError {
+			position: relative;
+			bottom: 30px;			
+		}
+		input#buttonPanel {
+			border-radius: 0px 5px 5px 0px;
+		}
+		input#buttonPanel:hover {
+			background: unset;
+		}	
+		input, button {
+			border-color: cornflowerblue;
+			border-radius: 5px;
+			padding-left: 5px;
+			color: royalblue;
+			background: seashell;
+			margin-bottom: 1px;
+			border-width: 2px;
+		}
+		p.partWeek input {
+			border-width: 1px;
+		}
+		.item {
+		border-radius: 15px;
+		background: cornflowerblue;
+		}
+		#slide {
+			height: 45px;
+		    text-align: right;
+			margin-right: 68px;
+		}
+		#pairsSld {
+			position: relative;
+			left: -108%;
+			top: -91%;
+		}
+		#practicsSld {
+			position: relative;
+			right: -66%;
+			bottom: 275%;
+			color: gray;
+		}
+		.sld {
+			font-size: 25px;
+		}
+		.containerSld {
+			width: 80px;
+			height: 32px;
+			background: rgba(255,255,255,.4);
+			border: 2px solid #fff;
+			border-radius: 18px;
+			position: relative;
+			display: inline-block;
+		}
+		.item {
+			display: block;
+			height: 26px;
+			width: 26px;
+			border-radius: 15px;
+			background: cornflowerblue;
+			position: absolute;
+			top: 1px;
+			left: 3px;
+			transition: left .5s ease-out;
+		}
+		.tip2 {
+			margin: 0px;
+			margin-right: 20px;
+		}
+		#hid {
+			display:none;
+		}
+		div.hide{
+			display: none;
+		}
+		h1.hide2 {
+			display: none;
+		}
+		#main {
+		  position: absolute;
+		  top: 50%;
+		  left: 50%;
+		  transform: translate(-50%, -50%);
+		}		
+		#loadingText {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-size: 39px;
+			margin-top: 100px;
+			color: #42648b;
+			font-family:Pompadur,'Comic Sans MS',cursive;
+		}	
+		#sumButton {
+			font-size: 20px;
+		}
+		#sumButton:hover {
+			color: red;
+			background: unset;
+		}
+		.error {
+			color: red;
+			font-size: 38px;
+			text-align: center;
+		}
+		#pass {
+			font-size: 26px;
+			color: red;
+			top: 3px;
+			z-index: -69;
+			position: unset;
+			margin-right: 5px;
+		}
+		.groupD {
+			color: dodgerblue;				
+		}
+		#cancelButton {
+			font-size: 20px;
+			border-radius: 5px;					
+		}

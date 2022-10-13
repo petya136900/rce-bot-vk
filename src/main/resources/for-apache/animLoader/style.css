@@ -1,0 +1,14 @@
+@font-face{
+	font-family:Pompadur;
+	src: local(pompadur),url(/fonts/font.ttf);
+}
+#loadingText {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 39px;
+	margin-top: 100px;
+	color: #42648b;
+	font-family:Pompadur,'Comic Sans MS',cursive;
+}	
