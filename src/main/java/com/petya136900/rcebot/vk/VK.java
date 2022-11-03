@@ -13,7 +13,13 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -121,6 +127,86 @@ public class VK {
 			if(vkJson.getMessage()!=null)
 				return vkJson.getMessage().getInternalIsMention();
 		return false;
+	}
+	public CompletableFuture<String[]> asyncGetUploadedPhotos(String[] urls) throws InterruptedException, TimeoutException {
+		return asyncGetUploadedPhotos(urls,x->{});
+	}
+	public CompletableFuture<String[]> asyncGetUploadedPhotos(String[] urls,
+					  		Consumer<? super String> actionPart,
+						    Consumer<? super String[]> actionFinal) throws InterruptedException, TimeoutException, ExecutionException {
+		CompletableFuture<String[]> future = asyncGetUploadedPhotos(urls, actionPart);
+		actionFinal.accept(future.get());
+		return future;
+	}
+	public String[] getUploadedPhotos(String[] urls) throws InterruptedException, TimeoutException, ExecutionException {
+		return asyncGetUploadedPhotos(urls,x->{}).get();
+	}
+	public String[] getUploadedPhotos(String[] urls,
+						  	Consumer<? super String> actionPart) throws InterruptedException, TimeoutException, ExecutionException {
+		return asyncGetUploadedPhotos(urls,actionPart).get();
+	}
+	public String[] getUploadedPhotos(String[] urls,
+						 	Consumer<? super String> actionPart,
+						  	Consumer<? super String[]> actionFinal) throws InterruptedException, TimeoutException, ExecutionException {
+		CompletableFuture<String[]> future = asyncGetUploadedPhotos(urls, actionPart);
+		actionFinal.accept(future.get());
+		return future.get();
+	}
+	private static final Integer UPLOADE_IMAGE_TIMEOUT_SEC = 240;
+    public CompletableFuture<String[]> asyncGetUploadedPhotos(String[] urls,
+			  Consumer<? super String> actionPart) throws InterruptedException, TimeoutException {
+		CountDownLatch locker = new CountDownLatch(urls.length);
+		AtomicBoolean inter = new AtomicBoolean(false);
+		AtomicLong lastLoaded = new AtomicLong(System.currentTimeMillis());
+		CompletableFuture<String[]> future = CompletableFuture.supplyAsync(()->{
+			String[] attArr = new String[urls.length];
+			for(int i=0;i<urls.length;i++) {
+				if(Thread.currentThread().isInterrupted()) {
+					locker.countDown();
+					inter.set(true);
+					break;
+				}
+				final Integer arrIndex = i;
+				Supplier<String> attachSupplier = () -> internalUpload(urls[arrIndex]);
+				CompletableFuture<String> futureUploader = CompletableFuture
+						.supplyAsync(attachSupplier);
+				futureUploader.thenAccept(actionPart);
+				futureUploader.thenAccept(att->{
+					//System.out.println("att["+arrIndex+"]: "+att);
+					lastLoaded.set(System.currentTimeMillis());
+					locker.countDown();
+					attArr[arrIndex]=att;});
+			}
+			try {
+				while(!locker.await(UPLOADE_IMAGE_TIMEOUT_SEC, TimeUnit.SECONDS)) {
+					if((System.currentTimeMillis()-lastLoaded.get())>UPLOADE_IMAGE_TIMEOUT_SEC*1000) {
+						return null;
+					}
+				}
+				return internalCheckArray(attArr);
+			} catch (InterruptedException e) {
+				return null;
+			}
+		});
+		if(inter.get())
+			throw new InterruptedException();
+		return future;
+    }
+	private String internalUpload(String s) {
+		try {
+			if(s==null||s.trim().length()<1)
+				return null;
+			return getUploadedPhoto(new URL(s)).toStringAttachment();
+		} catch (Exception e) {
+			reply("ERROR: Failed to upload image: \n"+e.getLocalizedMessage());
+			return null;
+		}
+	}
+	private static String[] internalCheckArray(String[] s) {
+		List<String> list = Stream.of(s)
+				.filter(x -> x != null)
+				.collect(Collectors.toList());
+		return list.toArray(new String[list.size()]);
 	}
 
 	public enum ParseStatus {

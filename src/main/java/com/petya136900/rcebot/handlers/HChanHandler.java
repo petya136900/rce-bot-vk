@@ -12,6 +12,7 @@ import com.petya136900.rcebot.vk.structures.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,6 @@ public class HChanHandler implements HandlerInterface {
         String stage = vkContent.getVK().getStage();
         String message = vkContent.getVK().getText();
         if(payload==null) { payload = vkContent.getVK().getCallbackPayload(); fromCallback=true; }
-        /*
-        if(!vkContent.isAdmin()) {
-            vkContent.reply("Access denied ;)");
-            return;
-        }
-        */
         if(!vkContent.getVK().getPeer_id().equals(vkContent.getVK().getFrom_id())) {
             conversationsUnsupported();
             return;
@@ -128,7 +123,7 @@ public class HChanHandler implements HandlerInterface {
                 .map(String::trim)
                 .filter(x->x.length()>0)
                 .collect(Collectors.joining(", "));
-        if(tags.length()<0) {
+        if(tags.length()<1) {
             tagsSelect("Не указан ни один тэг");
             return;
         }
@@ -185,40 +180,38 @@ public class HChanHandler implements HandlerInterface {
             busy();
             markCBRead(results[offset].getTitle());
             MessageSendResponse.MessageInfo mi = vkContent.reply(results[offset].getTitle());
-            ArrayList<String> attachs = new ArrayList<>();
+            MessageInfoAtomicNonImmutable mia = new MessageInfoAtomicNonImmutable(mi);
+            ////*
+            String[] pages = result.getPageUrls();
             if(!result.isParsed()) {
-                mi.editMessageOrDeleteAndReply("Новый комикс, загрузка в БД..",null,Keyboard.clear());
-                int i=1;
-                for(String page : result.getPageUrls()) {
-                    if(Thread.currentThread().isInterrupted())
-                        throw new InterruptedException();
-                    String attach = upload(page);
-                    if(attach!=null)
-                        attachs.add(attach);
-                    mi.editMessageOrDeleteAndReply(String.format("Новый комикс, загрузка в БД..[%d/%d]",i,result.getPageUrls().length));
-                    i++;
-                }
-                String[] attachesArray = getArray(attachs);
+                mia.editMessageOrDeleteAndReply("Новый комикс, загрузка в БД..",null,Keyboard.clear());
+                AtomicInteger uploaded = new AtomicInteger(0);
+                String[] attachesArray = vkContent.getUploadedPhotos(pages,
+                    x -> mia.editMessageOrDeleteAndReply(
+                            String.format("Новый комикс, загрузка в БД..[%d/%d]",
+                                    uploaded.incrementAndGet(),result.getPageUrls().length)));
                 result.setAttachs(attachesArray);
-                result.setParsed(true);
+                if(attachesArray!=null)
+                    result.setParsed(true);
                 MySqlConnector.saveHCHan(result,true);
             }
             if(result.getAttachs()==null||result.getAttachs().length<1) {
-                vkContent.reply("Хмм.. у этого комикса ещё нет страниц, выберите другой");
+                mia.editMessageOrDeleteAndReply("Хмм.. у этого комикса ещё нет страниц, выберите другой");
                 scrollResult(offset,true);
                 unbusy();
                 return;
             }
-            attachs = new ArrayList<>();
+            mia.deleteMessage();
+            ArrayList<String> attachsFinal = new ArrayList<>();
             for(int y=0;y<result.getAttachs().length;y++) {
-                attachs.add(result.getAttachs()[y]);
-                if(attachs.size()==10) {
-                    vkContent.reply("",getArray(attachs));
-                    attachs = new ArrayList<>();
+                attachsFinal.add(result.getAttachs()[y]);
+                if(attachsFinal.size()==10) {
+                    vkContent.reply("", getArray(attachsFinal));
+                    attachsFinal = new ArrayList<>();
                 }
             }
-            if(attachs.size()>0) {
-                vkContent.reply("",getArray(attachs)); }
+            if(attachsFinal.size()>0) {
+                vkContent.reply("",getArray(attachsFinal)); }
             scrollResult(offset,true);
         } catch (InterruptedException e) {
             mainMenu("Loading interrupted");
@@ -293,17 +286,18 @@ public class HChanHandler implements HandlerInterface {
             unbusy();
         }
     }
-    public String upload(String s) {
-        try {
-            if(s==null||s.trim().length()<1)
-                return null;
-            return vkContent.getUploadedPhoto(new URL(s)).toStringAttachment();} catch (Exception e) { //e.printStackTrace();
-            return null;}
-    }
     private void unbusy() {
         busy=false;
     }
-
+    private String upload(String s) {
+        try {
+            if(s==null||s.trim().length()<1)
+                return null;
+            return vkContent.getUploadedPhoto(new URL(s)).toStringAttachment();
+        } catch (Exception e) {
+            return null;
+        }
+    }
     private void scrollResult(Integer resultOffset, Boolean silence) {
         if(resultOffset>=results.length||resultOffset<0) {
             markCBRead("Bad index");

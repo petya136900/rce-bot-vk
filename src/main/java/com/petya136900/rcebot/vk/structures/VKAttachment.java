@@ -463,7 +463,6 @@ public class VKAttachment {
 		public class Comments {
 			private Integer count;
 			private Integer can_post;
-			private Integer groups_can_post;
 			public void setCount(Integer count) {
 				this.count = count;
 			}
@@ -476,13 +475,15 @@ public class VKAttachment {
 			public void setCan_post(Integer can_post) {
 				this.can_post = can_post;
 			}
+			/*
+			private Integer groups_can_post;
 			public Integer getGroups_can_post() {
 				return groups_can_post;
 			}
 			public void setGroups_can_post(Integer groups_can_post) {
 				this.groups_can_post = groups_can_post;
 			}
-
+			 */
 		}
 		public Boolean isFriends_only() {
 			return (friends_only==null||friends_only==0)?false:true;
