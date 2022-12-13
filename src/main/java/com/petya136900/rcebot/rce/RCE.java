@@ -17,7 +17,7 @@ public class RCE {
 	//private static Long addCheckInterval = 1000L*60L*5L;// ms
 	// "https://xn--j1al4b.xn--p1ai";
 	private static String TTDIR; // = "/rasp/";
-	private static final Integer notFoundLimit = 10;
+	private static final Integer notFoundLimit = 16;
 	public static String getRceHost() {
 		return RCE_HOST;
 	}
