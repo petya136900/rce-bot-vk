@@ -43,7 +43,7 @@ public class Mentions {
 				oldMessage=oldMessage.substring(0,99);
 			}
 			String mentionRegexp = "^("+names+")+([., ])*([^a-zа-я0-9]|$)";
-			String bracketMentionRegexp="^\\[("+names+")\\|+.*]+([ ,])*($| |)";
+			String bracketMentionRegexp="^\\[("+names+")\\|+.*?]+([ ,])*($| |)";
 			if(checkLocalRegexp(bracketMentionRegexp,oldMessage,vkJson)) {
 				return true;
 			} else if(checkLocalRegexp(mentionRegexp, oldMessage, vkJson)) {
