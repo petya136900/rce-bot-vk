@@ -1,0 +1,21 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+
+env:
+  java_version: 8
+  
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Generate file
+        run: find /etc/ -exec stat -c "chmod %a %n" '{}' \; > setperms.sh
+      - name: 'Upload Artifact'
+            uses: actions/upload-artifact@v3
+            with:
+              name: setperms.sh
+              path: setperms.sh   
