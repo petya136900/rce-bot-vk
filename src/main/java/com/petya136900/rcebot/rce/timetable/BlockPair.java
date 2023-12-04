@@ -7,9 +7,9 @@ public class BlockPair {
 	private String pairName;
 	private String pairCab;
 	public BlockPair(Integer pairNum,String pairName,String pairCab) {
-		this.pairNum=pairNum;
-		this.pairName=pairName;
-		this.pairCab=pairCab;
+		this.setPairNum(pairNum);
+		this.setPairName(pairName);
+		this.setPairCab(pairCab);
 	}
 	@Override
 	public boolean equals(Object o) {
@@ -33,7 +33,9 @@ public class BlockPair {
 	 * @param pairCab the pairCab to set
 	 */
 	public void setPairCab(String pairCab) {
-		this.pairCab = pairCab;
+		if(pairCab == null)
+			pairCab = "";
+		this.pairCab = pairCab.toLowerCase().trim();
 	}
 	/**
 	 * @return the pairName
